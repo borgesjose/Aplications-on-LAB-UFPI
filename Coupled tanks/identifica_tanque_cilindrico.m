@@ -29,7 +29,7 @@ k2 = b*k1
 k1 = 1/(pi*(R/H)^2)
 k2 = b/(pi*(R/H)^2)
 
-dh_dt = Fin*k1 - k2*h^(-1/2)
+%dh_dt = Fin*k1 - k2*h^(-1/2)
 
 %%
 % Metodo de Hagglund:
@@ -42,7 +42,7 @@ dh_dt = Fin*k1 - k2*h^(-1/2)
 
 G = 28
 
-T = 31
+T = 32
 
 L = 1 % Atraso de Transporte Caracteristico da planta
 
@@ -72,9 +72,9 @@ z = tf('z', Ts )
 ftz = (b1*(z^-1)+ b2*(z^-2))/(1 + a1*(z^-1))
 
 %%
-uiopen('C:\Users\netlu\OneDrive\Área de Trabalho\Borges\RESULTADOS PRATICOS - TANQUE CILINDRICO\RESPOSTA AO DEGRAU - U-0_08-1.fig',1)
+uiopen('RESPOSTA AO DEGRAU - U-0_08-1.fig',1)
 opt = stepDataOptions;
-opt.StepAmplitude = .07;
+opt.StepAmplitude = .08;
 hold on
 step(fts,opt)
 step(ftz,opt)
