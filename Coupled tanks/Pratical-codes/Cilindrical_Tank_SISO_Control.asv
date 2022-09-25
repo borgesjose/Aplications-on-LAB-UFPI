@@ -141,7 +141,8 @@
         ref_type = 'st'; % st = step ; us = upper stair ; ls = lower stair;
         patamar = 0.050;
         passo = 0.10;
-       
+        Tamostra = Ts;
+    
         ref = ref_def(patamar,passo,nptos);
                 
           h = figure(1);  
@@ -149,9 +150,7 @@
           title('Implementação Tanque ');
           xlabel('Tempo (s)');
           ylabel('Leitura Sensor');
-        
-          %Flag-acionar medida altura
-            flag_h = 0;
+
         
          k=1;
         
@@ -160,14 +159,15 @@
 
         while k < nptos
             
-            if flag_h == 1:
-               y(k) = mapfun(recebe(2),0.19,2.389,0,60); %Recebe o valor medido da altura e armazena 
-            else
-               y(k) = recebe(2); %Recebe o valor medido de armazena  
-            end
             
+            
+            [~,y] = ode45(@(t,y) tank_conical(t,y,u(k-1),tank),[0,Ts],h(k-1));
+            h0 = y(end); % take the last point
+            h(k) = h0; % store the height for plotting
+            
+       
 
-            erro(k)=ref(k) - y(k);
+            erro(k)=ref(k) - h(k);
            
             
             rate(k)=(erro(k) - erro(k-1));%/Tc; %Rate of erro
@@ -195,30 +195,19 @@
                         Kd(k)= (Td)*Kc/Ami;
                         Ki(k)= (Kc/Ami)/(Ti);
 
-                        alpha = (Kc/Ami)*(1+((Td)/Ts)+(Ts/(2*(Ti))));
-                        beta = -(Kc/Ami)*(1+2*((Td)/Ts)-(Ts/(2*(Ti))));
-                        gama = (Kc/Ami)*(Td)/Ts;
+                        alpha = (Kc/Ami)*(1+((Td)/Tamostra)+(Tamostra/(2*(Ti))));
+                        beta = -(Kc/Ami)*(1+2*((Td)/Tamostra)-(Tamostra/(2*(Ti))));
+                        gama = (Kc/Ami)*(Td)/Tamostra;
 
                         u(k)= u(k-1) + alpha*erro(k) + beta*erro(k-1) + gama*erro(k-2);                      
 
                         %saturation:
-                        if(u(k)<0) u(k)=0;end;
-                        if(u(k)>1) u(k)=1;end;
-                        
-              set_pwm_duty(1,u(k),3000);
-              
-              x1 = get(hLine1, 'XData');  
-              y1 = get(hLine1, 'YData');  
-              x1 = [x1 k*Ts];  
-              y1 = [y1 y(k)];  
-              set(hLine1, 'XData', x1, 'YData', y1);  
-              k=k+1;
-              Tempo(k) = k*Ts;
-              tempo(k)=Tempo(k);
-              pause(Ts);
+                        if(u(k)<5e-5) u(k)=5e-5;end;
+                        if(u(k)>2*3.8000e-04) u(k)=2*3.8000e-04;end;
 
+                        tempo(k)=i*Tamostra;
+        k=k+1;
         end
-        set_pwm_duty(1,1,3000);
         %% Step 7, Saving and ploting results
         
         if (PIDflag)
@@ -230,7 +219,7 @@
             I_pid = esforco_ponderado(erro,u,H,100)
             IG_pid = IG(H,1e4,1e9,1,u,ref,h)
             
-            sy_pid = var(h)
+            sy_pid= var(h)
             su_pid = var(u)
             
             fileName = ['Resluts for PID - ' ,' - ', Opt_type , ' - ', PIDtype,' - ',ref_type,' - ',simName];
@@ -238,7 +227,7 @@
             if (~exist(trail)) mkdir(trail);end   
             save( [trail,'/',fileName])
 
-           %[fig1,fig2] =  p_pid(ts,h,ref,u,tempo,Kp,Kd,Ki)
+           [fig1,fig2] =  p_pid(ts,h,ref,u,tempo,Kp,Kd,Ki)
             
         elseif(Opt_type ~= 'NO'),
             
@@ -263,7 +252,7 @@
                 save( [trail,'/',fileName])
 
 
-                 %p_ft1(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
+                 p_ft1(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
 
                 elseif (FT1type == 'N')
                     I_t1 = esforco_ponderado(erro,u,H,100)
@@ -283,7 +272,7 @@
                     if (~exist(trail)) mkdir(trail);end   
                     save( [trail,'/',fileName])
 
-                  % p_ft1_nl(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
+                   p_ft1_nl(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
 
                 end;
             
@@ -309,7 +298,7 @@
                 if (~exist(trail)) mkdir(trail);end   
                 save( [trail,'/',fileName])
                 
-               % p_ft2(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
+                p_ft2(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
                 
             elseif (FT2Itype == 'N')
                 I_t2_nli = esforco_ponderado(erro,u,H,100)
@@ -330,7 +319,7 @@
                 if (~exist(trail)) mkdir(trail);end   
                 save( [trail,'/',fileName])
                 
-               % p_ft2(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
+                p_ft2(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
                 
             end;
              
@@ -358,7 +347,7 @@
                 save( [trail,'/',fileName])
 
 
-                 %p_ft1(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
+                 p_ft1(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
 
                 elseif (FT1type == 'N')
                     I_t1 = esforco_ponderado(erro,u,H,100)
@@ -378,7 +367,7 @@
                     if (~exist(trail)) mkdir(trail);end   
                     save( [trail,'/',fileName])
 
-                   %p_ft1_nl(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
+                   p_ft1_nl(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
 
                 end;
             
@@ -404,7 +393,7 @@
                 if (~exist(trail)) mkdir(trail);end   
                 save( [trail,'/',fileName])
                 
-               % p_ft2(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
+                p_ft2(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
                 
             elseif (FT2Itype == 'N')
                 I_t2_nli = esforco_ponderado(erro,u,H,100)
@@ -425,7 +414,7 @@
                 if (~exist(trail)) mkdir(trail);end   
                 save( [trail,'/',fileName])
                 
-                %p_ft2(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
+                p_ft2(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
                 
             end;
             
@@ -434,3 +423,17 @@
             
         end;
         
+        if(flag_sinusoidal_dist)
+             figure
+            plot(rr_ss);
+           
+            ruido_db_level = snr(h',rr_ss)
+        end;%plot_ruido_senoide(ts); end;
+        
+        if( flag_noise) plot_ruido(ts,ruido); end;
+        
+
+ 
+ 
+ 
+ 
