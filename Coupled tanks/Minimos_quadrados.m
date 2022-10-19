@@ -1,3 +1,16 @@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+% Universidade Federal do Piauí                       %
+% Campus Ministro Petronio Portela                    %
+% Copyright 2022 -José Borges do Carmo Neto-          %
+% @author José Borges do Carmo Neto                   %
+% @email jose.borges90@hotmail.com                    %
+% Minimos Quadrados                                   %
+%                                                     %
+%  -- Version: 1.0  - 18/09/2022                      %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+
 inicializa('COM4')
 %clear;
 Ts = 0.1;
