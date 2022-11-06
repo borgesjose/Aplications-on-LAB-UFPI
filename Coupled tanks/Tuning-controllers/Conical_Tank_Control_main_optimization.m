@@ -1,46 +1,119 @@
- 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
-% Universidade Federal do Piau√≠                       %
+% Universidade Federal do Piaui                       %
 % Campus Ministro Petronio Portela                    %
-% Copyright 2022 -Jos√© Borges do Carmo Neto-          %
-% @author Jos√© Borges do Carmo Neto                   %
+% Copyright 2022 -Jose Borges do Carmo Neto           %
+% @author Jose Borges do Carmo Neto                   %
 % @email jose.borges90@hotmail.com                    %
-% cilindrical tank Aplication                         %
+%  OtimizaÁ„o metaheuristica dos controladores PID    %
+%  Fuzzy tipo 1 e  tipo 2 Intervalar                  %
 %                                                     %
-%  -- Version: 1.0  - 18/09/2022                      %
+%  -- Version: 0.1  - 14/06/2022                      %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-% Main script for test of optimal controllers applied to a conical tank
+% Main script for metaheuristic optimization algorithms applied to a conical tank
 
 %% Step 1, simulation definition:
         %clear;clc;
         format shortg;
         data_horario_test = datestr(clock,'yyyy-mm-dd THH-MM-SS');
        
-        Tsim = 360; % Total simulation time seconds
+        Tsim = 500; % Total simulation time
         
         PIDtype = 'ZN'; %'ZN' = Ziegle-Nichols , 'CC' = Choen Coon,'AT' = Astrom, 'PR' = Teacher tunning;
-        PIDflag = 1;
+        PIDflag = 0;
         FuzzyType = 'T2';% 'T1' = Tipo 1, 'T2' = Tipo 2;
         FT1type = 'L'; % L = input linear ; N = input non linear
-        FT2Itype = 'L'; % L = input linear ; N = input non linear
+        FT2Itype = 'N'; % L = input linear ; N = input non linear
+        N_membership_functions = '3';
         
+        flag_load_dist = 0; 
+        flag_noise = 0;
+<<<<<<< HEAD
+        flag_sinusoidal_dist = 0; r_level = 1.5e-2;
+=======
+        flag_sinusoidal_dist = 0; 
+>>>>>>> 5d4a167f500a58c60f043ddcb6a8d5cd399990d2
+        flag_model_severance = 0;
         
-        Opt_type = 'NO'; % AG = Genetic Algorithm ; PS = Particle Swarm ; NO = No optimization
+        Opt_type = 'PS'; % AG = Genetic Algorithm ; PS = Particle Swarm ; NO = No optimization
         
-        folderName = ['Teste-pratico', '-', FuzzyType,'-',Opt_type,'-',data_horario_test];
+        folderName = ['h015', '-', FuzzyType,'-',Opt_type,'-',data_horario_test];
 
 %%        
         if(PIDflag) simName = 'PID';
         else simName = FuzzyType;
         end;
         
-        %% Step 2 - Controller definition: 
+        if(flag_load_dist) simName = 'Load_disturbace'; end;
+        if(flag_noise) simName = 'Noise'; end;
+        if(flag_sinusoidal_dist) simName = 'Sinusoidal_Noise'; end;
+        if(flag_model_severance) simName = 'Model_Severance'; end;
+  
+        %% Step 2 - Problem definition:
+        %Tank definition structure
+        tank.h0 = 0.001; % initial point
+        
+        tank.H = 0.375;          
+        tank.R1 = 0.125;
+        tank.R2 = 0.01;
+        
+        tank.Cv = 0.97; %velocity coefficient (water 0.97)
+        tank.Cc = 0.97; %contraction coefficient (sharp edge aperture 0.62, well rounded aperture 0.97)
+
+        tank.Cd = tank.Cc*tank.Cv; % discharge coefficient
+
+        tank.r = 0.005;% output ratio in meters
+
+        tank.A = pi*tank.r^2;% output Area
+        
+        %% Step 3 - Controller definition: 
 
         [Kc,Ti,Td] = PID(PIDtype); % Type PID selection 
+
+        %% Step 6, DefiniÁıes de otimizaÁ„o:
+       
+        % PSO
+            pso.noP = 64;
+            pso.maxIter = 100;
+            pso.wMax = 0.9;
+            pso.wMin= 0.2;
+            pso.c1= 2;
+            pso.c2= 2;
+
+            pso.folder = folderName
+            pso.visFlag = 1;
+            
+
+            pso.fobj = @objfunc;
+
         
-%% Step 3  - Controller definition:        
+       % AG
+       
+            ag.prob_mutation = 0.10;%rand(1);+
+            
+            ag.prob_crossover = 0.9;%rand(1);
+            ag.geracoes = 50;
+
+            ag.populacao_size = 128; %defino o tamanho da populaÁ„o
+            ag.N_mais_aptos = 32;
+
+            ag.objfunction = @objfunc;
+            
+            ag.visFlag = 1;
+            ag.folder = folderName;
+   
+            L = 2;
+        %% Step 7, OtimizaÁ„o:
+        
+        if(Opt_type == 'AG') 
+            [param] = opt_AG(FuzzyType,FT1type,FT2Itype,L,ag);
+        end;
+        if(Opt_type == 'PS')         
+            [param] = opt_PSO(FuzzyType,FT1type,FT2Itype,L,pso);
+        end;
+        
+        
+%% Step 4  - Controller definition:        
 
     if (PIDflag)
         disp('lol')
@@ -54,26 +127,12 @@
         Theta_m_max = 72;
         L = 2;
         
-        % o vetor parametros d√° os valores das MF's
+        % o vetor parametros d· os valores das MF's:
         if (FT1type == 'L')
-            if (Opt_type == 'AG')
-                param = [-L,0,-L,0,L,0,L,-L,0,-L,0,L,0,L];
-            end;
-            if (Opt_type == 'PS')
-                param = [-1.1315,-0.9545,0,0, 0.4670, 0.5544, 0.7647, 1.2665, 1.2889, 1.4262, 1.8816, 1.9272, 2.0000, 2.0000];
-            end;
-            
             if (Opt_type == 'NO')
                 param = [-L,0,-L,0,L,0,L,-L,0,-L,0,L,0,L];
             end;
-        
         elseif (FT1type == 'N')
-            if (Opt_type == 'AG')
-                param = [-L,0,-L,0,L,0,L,-L,0,-L,0,L,0,L];
-            end;
-            if (Opt_type == 'PS')
-                param = [-L,0,-L,0,L,0,L,-L,0,-L,0,L,0,L];
-            end;            
             if (Opt_type == 'NO')
                 param = [-L,0,-L,0,L,0,L,-L,0,-L,0,L,0,L];
             end;
@@ -83,31 +142,29 @@
     end
     
     if (FuzzyType == 'T2'),
-        Am_min = 2;
+        Am_min = 1;
         Am_max = 5;
-        Theta_m_min = 45;
+        Theta_m_min = 35;
         Theta_m_max = 72;
         L = 2;
         
-        % o vetor parametros d√° os valores das MF's:        
+        % o vetor parametros d· os valores das MF's:        
         if (FT2Itype == 'L')
+            %gene = [0.2377,0.0306,-0.2588,0.4572,0.5397,0.2005,0.0634,0.0350,0.4868,0.2303,0.1049,-0.0324,0.0481,0.3489,0.4641,0.2081];
             
+            %Resultado¥para AG:
+            %param = [0.1809,0.3258,0.1362,0.2374,0.0156,0.2217,0.6816,0.0021,0.5516,0.2100,0.0979,0.0679,0.0178,0.2848,1.8989,0.0048]
+            param =[param,1,1];
             %Resultado para PSO:
-            if (Opt_type == 'AG')
-                param = .3*ones(1,16);   
-            end;
-            
-            if (Opt_type == 'PS')
-                param = [ -4.0000,-3.9509,-2.9262,-2.7615,-1.5759,-1.5165,-0.9248,-0.7246,-0.2196, 1.1298, 1.5116, 1.6241, 1.7757, 2.8473,3.2940,4.0000];   
-            end;
-            
             if (Opt_type == 'NO')
-                param = .3*ones(1,16); 
+                param = .3*ones(1,16);
+                param =[param,1,1];
             end;
             
-        param =[param,1,1];    
+            
         elseif (FT2Itype == 'N')
-            param = [-2,-2,-2,-2,-2,-2,-2,-0.63817,0.63322,1.3364,1.3386,2]; % Dia 04/09/2022
+            %gene =[0.2146,0.3760,-0.1644,0.4906,0.0376,0.2273,0.2379,-0.0310,0.4428,0.5785,0.3263,0.3500];
+            %param=[0.3232,0.4712,0.0218,0.4454,0.5986,0.1102,0.2554,0.0081,0.3159,1.9916,0.9286,0.2525];
             if (Opt_type == 'NO')
                 param = .3*ones(1,12);
             end;
@@ -117,108 +174,105 @@
     end
 
     end      
-        %% Step 4, Aplication setings:
+        %% Step 5, simulation setings:
         
-        global SerPIC
-        
-        varlist = {'u','y', 'Tempo'};
-        clear(varlist{:})
-        clf(figure(1))
-        
-        freq = 6000; %Frequencia de atua√ß√£o da bomba
-        
-        Ts = 1; %  5~10s( Digital control systems,Landau,2006,p.32)
+        Ts = 5; %  5~10s( Digital control systems,Landau,2006,p.32)
         nptos = Tsim/Ts; %number point of simulation
         ts = linspace(0,Tsim,nptos); % time vector
-        H=30; % Horizon
-      
-        set_pwm_duty(1,1,freq); %zerar PWM
-
-        
+        H=nptos; % Horizon
+       
         u = zeros(nptos,1); % variavel de entrada
         h = zeros(nptos,1); % variavel de saida
         
         ref_type = 'st'; % st = step ; us = upper stair ; ls = lower stair;
+<<<<<<< HEAD
         patamar = 0.15;
+        passo = 0.00;
+=======
+        patamar = 0.05;
         passo = 0.10;
-       
+>>>>>>> 5d4a167f500a58c60f043ddcb6a8d5cd399990d2
+        Tamostra = Ts;
+    
         ref = ref_def(patamar,passo,nptos);
                 
-          h = figure(1);  
-          hLine1 = line(nan, nan, 'Color','red');
-          title('Implementa√ß√£o Tanque ');
-          xlabel('Tempo (s)');
-          ylabel('Leitura Sensor');
+        %clear h;
+        h(4)=tank.h0 ; h(3)=tank.h0 ; h(2)=tank.h0 ; h(1)=tank.h0 ; 
+        u(1)=1e-5 ; u(2)=1e-5 ; u(3)=1e-5; u(4)=1e-5;
+        erro(1)=1 ; erro(2)=1 ; erro(3)=1; erro(4)=1;
         
-          %Flag-acionar medida altura
-            flag_h = 0;
+        if( flag_load_dist) load('disturbio.mat'); end;
+        if( flag_noise) load('ruido.mat'); end;
         
-         k=1;
-        
-        
-        %% Step 8, PLANT APLICATION;
 
-        while k < nptos
+               
+        %% Step 8, Simulation with ode45;
+
+        for i=4:nptos
             
-            if (flag_h == 1):
-               y(k) = mapfun(recebe(2),0.19,2.389,0,60); %Recebe o valor medido da altura e armazena 
+            %Model severance
+            if( flag_model_severance) 
+                if(i > (nptos/2)) tank.r = 0.006; end;
+                tank.A = pi*tank.r^2;% output area
+            end;
+            
+            [~,y] = ode45(@(t,y) tank_conical(t,y,u(i-1),tank),[0,Ts],h(i-1));
+            h0 = y(end); % take the last point
+            h(i) = h0; % store the height for plotting
+            
+            
+            if( flag_model_severance)
+                erro(i)= ref(i) - h(i) ; %Erro
+            elseif( flag_sinusoidal_dist)
+                 rr_ss(i) = r_senoide(ts(i),r_level,0.3);
+                 erro(i)= ref(i) - h(i) + r_senoide(ts(i),r_level,0.3); %rr_ss(i);%ruido_senoidal_db(ts(i),db_level);
             else
-               y(k) = recebe(2); %Recebe o valor medido de armazena  
+                erro(i)= ref(i) - h(i);
             end
             
-
-            erro(k)= ref(k) - y(k);
-           
             
-            rate(k)=(erro(k) - erro(k-1));%/Tc; %Rate of erro
+            rate(i)=(erro(i) - erro(i-1));%/Tc; %Rate of erro
 
             if (PIDflag)
                 Ami = 1;
             else
                 if (FuzzyType == 'T1'),
                     
-                    Am(k) = FT1_pid_ag(erro(k),rate(k),L,param,FT1type);
-                    Ami = Am(k)*Am_max + Am_min*(1 - Am(k));
+                    Am(i) = FT1_pid_ag(erro(i),rate(i),L,param,FT1type);
+                    Ami = Am(i)*Am_max + Am_min*(1 - Am(i));
                 end
                 
                 if (FuzzyType == 'T2'),
                     
-                    Am(k) =Inferencia_T2(erro(k),rate(k),L,param,FT2Itype);
-                    Ami = Am(k)*Am_max + Am_min*(1 - Am(k));
+                    Am(i) =Inferencia_T2(erro(i),rate(i),L,param,FT2Itype);
+                    Ami = Am(i)*Am_max + Am_min*(1 - Am(i));
                     
                 end
                 
             end
                         %Controlador:
 
-                        Kp(k)= Kc/Ami;
-                        Kd(k)= (Td)*Kc/Ami;
-                        Ki(k)= (Kc/Ami)/(Ti);
+                        Kp(i)= Kc/Ami;
+                        Kd(i)= (Td)*Kc/Ami;
+                        Ki(i)= (Kc/Ami)/(Ti);
 
-                        alpha = (Kc/Ami)*(1+((Td)/Ts)+(Ts/(2*(Ti))));
-                        beta = -(Kc/Ami)*(1+2*((Td)/Ts)-(Ts/(2*(Ti))));
-                        gama = (Kc/Ami)*(Td)/Ts;
+                        alpha = (Kc/Ami)*(1+((Td)/Tamostra)+(Tamostra/(2*(Ti))));
+                        beta = -(Kc/Ami)*(1+2*((Td)/Tamostra)-(Tamostra/(2*(Ti))));
+                        gama = (Kc/Ami)*(Td)/Tamostra;
 
-                        u(k)= u(k-1) + alpha*erro(k) + beta*erro(k-1) + gama*erro(k-2);                      
+                        if (flag_load_dist) 
+                            u(i)= u(i-1) + alpha*erro(i) + beta*erro(i-1) + gama*erro(i-2) + disturbio(i);
+                        else
+                            u(i)= u(i-1) + alpha*erro(i) + beta*erro(i-1) + gama*erro(i-2);
+                        end;
 
                         %saturation:
-                        if(u(k)<0) u(k)=0;end;
-                        if(u(k)>1) u(k)=1;end;
-                        
-              set_pwm_duty(1,u(k),freq);
-              
-              x1 = get(hLine1, 'XData');  
-              y1 = get(hLine1, 'YData');  
-              x1 = [x1 k*Ts];  
-              y1 = [y1 y(k)];  
-              set(hLine1, 'XData', x1, 'YData', y1);  
-              k=k+1;
-              Tempo(k) = k*Ts;
-              tempo(k)=Tempo(k);
-              pause(Ts);
+                        if(u(i)<5e-5) u(i)=5e-5;end;
+                        if(u(i)>2*3.8000e-04) u(i)=2*3.8000e-04;end;
+
+                        tempo(i)=i*Tamostra;
 
         end
-        set_pwm_duty(1,1,freq);
         %% Step 7, Saving and ploting results
         
         if (PIDflag)
@@ -230,7 +284,7 @@
             I_pid = esforco_ponderado(erro,u,H,100)
             IG_pid = IG(H,1e4,1e9,1,u,ref,h)
             
-            sy_pid = var(h)
+            sy_pid= var(h)
             su_pid = var(u)
             
             fileName = ['Resluts for PID - ' ,' - ', Opt_type , ' - ', PIDtype,' - ',ref_type,' - ',simName];
@@ -238,7 +292,7 @@
             if (~exist(trail)) mkdir(trail);end   
             save( [trail,'/',fileName])
 
-           %[fig1,fig2] =  p_pid(ts,h,ref,u,tempo,Kp,Kd,Ki)
+           [fig1,fig2] =  p_pid(ts,h,ref,u,tempo,Kp,Kd,Ki)
             
         elseif(Opt_type ~= 'NO'),
             
@@ -263,7 +317,7 @@
                 save( [trail,'/',fileName])
 
 
-                 %p_ft1(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
+                 p_ft1(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
 
                 elseif (FT1type == 'N')
                     I_t1 = esforco_ponderado(erro,u,H,100)
@@ -283,7 +337,7 @@
                     if (~exist(trail)) mkdir(trail);end   
                     save( [trail,'/',fileName])
 
-                  % p_ft1_nl(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
+                   p_ft1_nl(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
 
                 end;
             
@@ -309,7 +363,7 @@
                 if (~exist(trail)) mkdir(trail);end   
                 save( [trail,'/',fileName])
                 
-               % p_ft2(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
+                p_ft2(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
                 
             elseif (FT2Itype == 'N')
                 I_t2_nli = esforco_ponderado(erro,u,H,100)
@@ -330,7 +384,7 @@
                 if (~exist(trail)) mkdir(trail);end   
                 save( [trail,'/',fileName])
                 
-               % p_ft2(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
+                p_ft2(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
                 
             end;
              
@@ -358,7 +412,7 @@
                 save( [trail,'/',fileName])
 
 
-                 %p_ft1(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
+                 p_ft1(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
 
                 elseif (FT1type == 'N')
                     I_t1 = esforco_ponderado(erro,u,H,100)
@@ -378,7 +432,7 @@
                     if (~exist(trail)) mkdir(trail);end   
                     save( [trail,'/',fileName])
 
-                   %p_ft1_nl(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
+                   p_ft1_nl(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
 
                 end;
             
@@ -404,7 +458,7 @@
                 if (~exist(trail)) mkdir(trail);end   
                 save( [trail,'/',fileName])
                 
-               % p_ft2(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
+                p_ft2(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
                 
             elseif (FT2Itype == 'N')
                 I_t2_nli = esforco_ponderado(erro,u,H,100)
@@ -425,7 +479,7 @@
                 if (~exist(trail)) mkdir(trail);end   
                 save( [trail,'/',fileName])
                 
-                %p_ft2(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
+                p_ft2(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
                 
             end;
             
@@ -433,4 +487,8 @@
             end
             
         end;
+        
+        if(flag_sinusoidal_dist) plot(rr_ss); end;%plot_ruido_senoide(ts); end;
+        if( flag_noise) plot_ruido(ts,ruido); end;
+
         

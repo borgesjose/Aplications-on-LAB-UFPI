@@ -10,11 +10,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-%clear all
+clear all
 
-npts = 199;
-u  = input(2:200)+rand(1,npts)*0.001;
-y  = output(2:200);
+npts = 30;
+u  = medidas
+y 
 
 Y = [];
 fi = [];
@@ -28,27 +28,15 @@ for j = 1:npts
    Y=[Y; y(j)]; fi=[fi;  -y1 -y2 u1 u2];  
    
 end;
-teta = inv(fi'*fi)*fi'*Y
+teta = invfi'*fi)*fi'*Y
 
 for t=1:2,
     yest(t)=0;
-end;
+end;;
 a1=teta(1);a2=teta(2);b1=teta(3);b2=teta(4);
 
 for t=3:npts,
     yest(t) = -a1*yest(t-1)-a2*yest(t-2)+b1*u(t-1)+b2*u(t-2);
-end;
-%%
-plot(y,'g');
-hold on;
-plot(yest, 'r');
-folderName = 'MQ';
-%%
-trail = ['./results/',folderName];
-if (~exist(trail)) mkdir(trail);end   
-save([trail, '/y.dat'],'y', '-ascii')
-save ([trail, '/u.dat'], 'u', '-ascii')
-
     
 
 

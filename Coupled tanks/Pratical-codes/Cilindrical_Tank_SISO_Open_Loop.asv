@@ -15,8 +15,6 @@ varlist = {'u','y', 'Tempo'};
 clear(varlist{:})
 clf(figure(1))
 
-folderName = 'open_loop';
-
 Ts = 1;  %Determinação do período de amostragem
 
 freq = 6000; %Frequencia de atuação da bomba
@@ -36,13 +34,9 @@ Qde_amostras =200; %Quantidade de amostras do gráfico
 
 if(ruido_flag = 1)
     for k=1:Qde_amostras u(k)=.1 + rand(1,npts)*0.01;end % Gerar o sinal de entrada com ruido;
-    filename = 'sinal_com_ruido';
-if(degrau_flag = 1)
-    for k=1:Qde_amostras u(k)=.1 + rand(1,npts)*0.01;end % Gerar o sinal de entrada com ruido;
-    filename = 'sinal_com_degrau';    
+    filename = sinal_com_ruido
 else
     for k=1:Qde_amostras u(k)=.1;end % Gerar o sinal de entrada;
-    filename = 'sinal_limpo';
 end
 
 h = figure(1);  
@@ -91,10 +85,8 @@ plot(Tempo,u,'b');
 hold off; 
 
 % Salvar dados y e u :
-trail = ['./results/',folderName];
+trail = ['./results/', Opt_type,'/',folderName];
 if (~exist(trail)) mkdir(trail);end   
-save([trail, '/y.dat'],'y', '-ascii')
-save ([trail, '/u.dat'], 'u', '-ascii')
-
+save( [trail,'/',fileName])
   
 
