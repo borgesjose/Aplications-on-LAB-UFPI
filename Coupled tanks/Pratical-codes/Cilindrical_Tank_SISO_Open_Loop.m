@@ -19,11 +19,12 @@ folderName = 'open_loop';
 
 Ts = 1;  %Determinação do período de amostragem
 
-freq = 6000; %Frequencia de atuação da bomba
+freq = 3000; %Frequencia de atuação da bomba
 
 %Flag-acionar medida altura
 flag_h = 0;
-
+ruido_flag = 1;
+degrau_flag = 0;
 %Previnir erro de leitura
 recebe(1)
 recebe(2)
@@ -32,16 +33,17 @@ recebe(3)
 %zerar PWM
 set_pwm_duty(1,1,freq); 
 
-Qde_amostras =200; %Quantidade de amostras do gráfico
+Qde_amostras =800; %Quantidade de amostras do gráfico
+npts = degrau_flag;
 
-if(ruido_flag = 1)
-    for k=1:Qde_amostras u(k)=.1 + rand(1,npts)*0.01;end % Gerar o sinal de entrada com ruido;
+if(ruido_flag == 1)
+     u=.3 + rand(1,npts)*0.01; % Gerar o sinal de entrada com ruido;
     filename = 'sinal_com_ruido';
-if(degrau_flag = 1)
-    for k=1:Qde_amostras u(k)=.1 + rand(1,npts)*0.01;end % Gerar o sinal de entrada com ruido;
+elseif(degrau_flag == 1)
+    for k=1:Qde_amostras u(k)=.3 + rand(1,npts)*0.01;end % Gerar o sinal de entrada com ruido;
     filename = 'sinal_com_degrau';    
 else
-    for k=1:Qde_amostras u(k)=.1;end % Gerar o sinal de entrada;
+    for k=1:Qde_amostras u(k)=.3;end % Gerar o sinal de entrada;
     filename = 'sinal_limpo';
 end
 
@@ -49,7 +51,7 @@ h = figure(1);
   hLine1 = line(nan, nan, 'Color','red');
   title('Resposta ao Degrau Tanque ');
   xlabel('Tempo (s)');
-        if flag_h == 1:
+        if (flag_h == 1)
            ylabel('Altura da Coluna de agua'); 
         else
            ylabel('Leitura do Sensor');  
@@ -58,7 +60,7 @@ h = figure(1);
   k=1;
      while k < Qde_amostras
        
-        if flag_h == 1:
+        if (flag_h == 1)
            y(k) = mapfun(recebe(2),0.19,2.389,0,60); %Recebe o valor medido da altura e armazena 
         else
            y(k) = recebe(2); %Recebe o valor medido de armazena  
