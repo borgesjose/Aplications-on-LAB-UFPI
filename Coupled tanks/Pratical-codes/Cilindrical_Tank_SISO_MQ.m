@@ -12,9 +12,9 @@
 
 %clear all
 
-npts = 199;
-u  = input(2:200)+rand(1,npts)*0.001;
-y  = output(2:200);
+npts = 799;
+load y.dat
+load u.dat
 
 Y = [];
 fi = [];
