@@ -13,14 +13,10 @@
 npts = 799;
 load y.dat
 load u.dat
-
-yy = smooth(y);
-%y = yy';
-
 %y = y(at:end);
 %u = u(at:end);
 
-at = 12;
+at = 12
 Y = [];
 fi = [];
 
@@ -38,7 +34,6 @@ teta = inv(fi'*fi)*fi'*Y
 for t=1:2,
     yest(t)=0;
 end;
-
 a1=teta(1);a2=teta(2);b1=teta(3);b2=teta(4);
 
 for t=5:npts,
@@ -49,14 +44,6 @@ plot(y,'g');
 hold on;
 plot(yest, 'r');
 folderName = 'MQ';
-
-err = y-yest
-plot(err, 'r');
-%%
-plot(y,'g');
-hold on;
-plot(yy, 'r');
-plot(ee, 'r');
 %%
 
 
