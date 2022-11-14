@@ -11,8 +11,10 @@
 
 
 npts = 799;
+
 load y.dat
 load u.dat
+
 
 yy = smooth(y);
 %y = yy';
@@ -50,13 +52,16 @@ hold on;
 plot(yest, 'r');
 folderName = 'MQ';
 
+%%
+
 err = y-yest
 plot(err, 'r');
-%%
+
 plot(y,'g');
 hold on;
 plot(yy, 'r');
 plot(ee, 'r');
+
 %%
 
 

@@ -10,7 +10,7 @@
 %  -- Version: 0.1  - 14/06/2022                      %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Main script for metaheuristic optimization algorithms applied to a conical tank
+% Main script for metaheuristic optimization algorithms applied to a tank
 
 %% Step 1, simulation definition:
         %clear;clc;
@@ -21,7 +21,7 @@
         
         PIDtype = 'ZN'; %'ZN' = Ziegle-Nichols , 'CC' = Choen Coon,'AT' = Astrom, 'PR' = Teacher tunning;
         PIDflag = 0;
-        FuzzyType = 'T2';% 'T1' = Tipo 1, 'T2' = Tipo 2;
+        FuzzyType = 'T1';% 'T1' = Tipo 1, 'T2' = Tipo 2;
         FT1type = 'L'; % L = input linear ; N = input non linear
         FT2Itype = 'N'; % L = input linear ; N = input non linear
         N_membership_functions = '3';
@@ -33,9 +33,9 @@
 
         flag_model_severance = 0;
         
-        Opt_type = 'PS'; % AG = Genetic Algorithm ; PS = Particle Swarm ; NO = No optimization
+        Opt_type = 'NO'; % AG = Genetic Algorithm ; PS = Particle Swarm ; NO = No optimization
         
-        folderName = ['h015', '-', FuzzyType,'-',Opt_type,'-',data_horario_test];
+        folderName = ['round-2', '-', FuzzyType,'-',Opt_type,'-',data_horario_test];
 
 %%        
         if(PIDflag) simName = 'PID';
@@ -48,22 +48,8 @@
         if(flag_model_severance) simName = 'Model_Severance'; end;
   
         %% Step 2 - Problem definition:
-        %Tank definition structure
-        tank.h0 = 0.001; % initial point
-        
-        tank.H = 0.375;          
-        tank.R1 = 0.125;
-        tank.R2 = 0.01;
-        
-        tank.Cv = 0.97; %velocity coefficient (water 0.97)
-        tank.Cc = 0.97; %contraction coefficient (sharp edge aperture 0.62, well rounded aperture 0.97)
-
-        tank.Cd = tank.Cc*tank.Cv; % discharge coefficient
-
-        tank.r = 0.005;% output ratio in meters
-
-        tank.A = pi*tank.r^2;% output Area
-        
+        load teta.dat
+        a1=teta(1);a2=teta(2);b1=teta(3);b2=teta(4);
         %% Step 3 - Controller definition: 
 
         [Kc,Ti,Td] = PID(PIDtype); % Type PID selection 
@@ -123,7 +109,7 @@
         Am_max = 5;
         Theta_m_min = 45;
         Theta_m_max = 72;
-        L = 2;
+        L = 4;
         
         % o vetor parametros dá os valores das MF's:
         if (FT1type == 'L')
@@ -174,7 +160,7 @@
     end      
         %% Step 5, simulation setings:
         
-        Ts = 5; %  5~10s( Digital control systems,Landau,2006,p.32)
+        Ts = 1; %  5~10s( Digital control systems,Landau,2006,p.32)
         nptos = Tsim/Ts; %number point of simulation
         ts = linspace(0,Tsim,nptos); % time vector
         H=nptos; % Horizon
@@ -184,50 +170,29 @@
         
         ref_type = 'st'; % st = step ; us = upper stair ; ls = lower stair;
 
-        patamar = 0.15;
-        passo = 0.00;
-
-        patamar = 0.05;
-        passo = 0.10;
-
+        patamar = 1.00;
+        passo = 0.0;
+        
         Tamostra = Ts;
     
         ref = ref_def(patamar,passo,nptos);
                 
-        %clear h;
-        h(4)=tank.h0 ; h(3)=tank.h0 ; h(2)=tank.h0 ; h(1)=tank.h0 ; 
-        u(1)=1e-5 ; u(2)=1e-5 ; u(3)=1e-5; u(4)=1e-5;
+        
+        u(1)=0 ; u(2)=0 ; u(3)=0; u(4)=0;
         erro(1)=1 ; erro(2)=1 ; erro(3)=1; erro(4)=1;
         
         if( flag_load_dist) load('disturbio.mat'); end;
         if( flag_noise) load('ruido.mat'); end;
-        load teta.dat
-        a1=teta(1);a2=teta(2);b1=teta(3);b2=teta(4);
-
-               
+      
         %% Step 8, Simulation with ode45;
 
         for i=5:nptos
             
-            %Model severance
-            if( flag_model_severance) 
-                if(i > (nptos/2)) tank.r = 0.006; end;
-                tank.A = pi*tank.r^2;% output area
-            end;
-            
-                y(t) = -a1*yest(t-3)-a2*yest(t-4)+b1*u(t-3)+b2*u(t-4);
+                h(i) = -a1*h(i-3)-a2*h(i-4)+b1*u(i-3)+b2*u(i-4);
   
-            if( flag_model_severance)
-                erro(i)= ref(i) - h(i) ; %Erro
-            elseif( flag_sinusoidal_dist)
-                 rr_ss(i) = r_senoide(ts(i),r_level,0.3);
-                 erro(i)= ref(i) - h(i) + r_senoide(ts(i),r_level,0.3); %rr_ss(i);%ruido_senoidal_db(ts(i),db_level);
-            else
+
                 erro(i)= ref(i) - h(i);
-            end
-            
-            
-            rate(i)=(erro(i) - erro(i-1));%/Tc; %Rate of erro
+                rate(i)=(erro(i) - erro(i-1));%/Tc; %Rate of erro
 
             if (PIDflag)
                 Ami = 1;
@@ -263,8 +228,8 @@
                         end;
 
                         %saturation:
-                        if(u(i)<5e-5) u(i)=5e-5;end;
-                        if(u(i)>2*3.8000e-04) u(i)=2*3.8000e-04;end;
+                        if(u(i)<0.05) u(i)=0.05;end;
+                        if(u(i)>0.5) u(i)=0.5;end;
 
                         tempo(i)=i*Tamostra;
 

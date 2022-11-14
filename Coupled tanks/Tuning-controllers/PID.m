@@ -1,11 +1,10 @@
 function [Kc,Ti,Td] = PID(Ctype),
 
       if (Ctype == 'ZN')
-            L =  0.158;
-            T1 = 2.83;
-            Kc = 1.2*(3.8000e-04/0.2056)*((T1)/(L))*10^-3;
-            Ti = 2*L;
-            Td = 0.5*L;       
+
+            Kc = 0.37222;
+            Ti =  1.5;
+            Td = 0.375;       
         end;
         
         if (Ctype == 'CC')
@@ -15,9 +14,9 @@ function [Kc,Ti,Td] = PID(Ctype),
         end;
         
         if (Ctype == 'AT')
-            Kc = .0001;
-            Ti = 0.2;
-            Td = 0.079;            
+            Kc = 0.049941;
+            Ti = 0.90969;
+            Td = 0.22742;            
             
         end;   
         
@@ -34,9 +33,9 @@ function [Kc,Ti,Td] = PID(Ctype),
         if(Ctype == 'PR')
             disp("Selecione um controlador: ZN , CC, AT ") 
             %SINTONIA PROFESSOR:
-            Kc = .00005;
-            Ti = 0.2;
-            Td = 0.079;
+            Kc = 0.37222;
+            Ti = 1.5;
+            Td = 0.375;
             %Td = 0.0;
         end; 
    

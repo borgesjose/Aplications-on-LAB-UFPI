@@ -2,28 +2,15 @@
         PIDtype = 'ZN'; %'ZN' = Ziegle-Nichols , 'CC' = Choen Coon,'AT' = Astrom, 'PR' = Teacher tunning;
         PIDflag = 0;
         %% Step 2 - Problem definition:
-        %Tank definition structure
-        tank.h0 = 0.001; % initial point
-        
-        tank.H = 0.375;          
-        tank.R1 = 0.125;
-        tank.R2 = 0.01;
-        
-        tank.Cv = 0.97; %velocity coefficient (water 0.97)
-        tank.Cc = 0.97; %contraction coefficient (sharp edge aperture 0.62, well rounded aperture 0.97)
-
-        tank.Cd = tank.Cc*tank.Cv; % discharge coefficient
-
-        tank.r = 0.005;% output ratio in meters
-
-        tank.A = pi*tank.r^2;% output Area
+        load teta.dat
+        a1=teta(1);a2=teta(2);b1=teta(3);b2=teta(4);
         L=2;
         %% Step 3 - Controller definition: 
 
         [Kc,Ti,Td] = PID(PIDtype); % Type PID selection 
         
 
-        Ts = 5; %  5~10s( Digital control systems,Landau,2006,p.32)
+        Ts = 1; %  5~10s( Digital control systems,Landau,2006,p.32)
         nptos = Tsim/Ts; %number point of simulation
         ts = linspace(0,Tsim,nptos); % time vector
         H=nptos; % Horizon
@@ -32,15 +19,15 @@
         h = zeros(nptos,1); % variavel de saida
         
         %ref_type = 'st'; % st = step ; us = upper stair ; ls = lower stair;
-        patamar = 0.15;
-        passo = 0.00;
+        patamar = 1;
+        passo = 0.10;
         Tamostra = Ts;
     
         ref = ref_def(patamar,passo,nptos);
                 
         %clear h;
-        h(4)=tank.h0 ; h(3)=tank.h0 ; h(2)=tank.h0 ; h(1)=tank.h0 ; 
-        u(1)=1e-5 ; u(2)=1e-5 ; u(3)=1e-5; u(4)=1e-5;
+        h(4)=0 ; h(3)=0 ; h(2)=0 ; h(1)=0 ; 
+        u(1)=0 ; u(2)=0 ; u(3)=0; u(4)=0;
         erro(1)=1 ; erro(2)=1 ; erro(3)=1; erro(4)=1;
 
 
@@ -84,12 +71,10 @@ if (FuzzyType == 'T1'),
 
         %% Step 8, Simulation with ode45;
 
-        for i=4:nptos
+        for i=5:nptos
             
             
-            [~,y] = ode45(@(t,y) tank_conical(t,y,u(i-1),tank),[0,Ts],h(i-1));
-            h0 = y(end); % take the last point
-            h(i) = h0; % store the height for plotting
+            h(i) = -a1*h(i-3)-a2*h(i-4)+b1*u(i-3)+b2*u(i-4);
             
             
            erro(i)=ref(i) - h(i);
@@ -126,8 +111,8 @@ if (FuzzyType == 'T1'),
                             u(i)= u(i-1) + alpha*erro(i) + beta*erro(i-1) + gama*erro(i-2);
 
                         %saturation:
-                        if(u(i)<5e-5) u(i)=5e-5;end;
-                        if(u(i)>2*3.8000e-04) u(i)=2*3.8000e-04;end;
+                        if(u(i)<0.05) u(i)=0.05;end;
+                        if(u(i)>0.5) u(i)=0.5;end;
 
                         tempo(i)=i*Tamostra;
 
