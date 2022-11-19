@@ -15,7 +15,7 @@ varlist = {'u','y', 'Tempo'};
 clear(varlist{:})
 clf(figure(1))
 
-folderName = 'test__model';
+folderName = 'open_loop';
 
 Ts = 1;  %Determinação do período de amostragem
 
@@ -34,8 +34,7 @@ recebe(3)
 set_pwm_duty(1,1,freq); 
 
 Qde_amostras =800; %Quantidade de amostras do gráfico
-npts = Qde_amostras;
-
+npts = degrau_flag;
 
 if(ruido_flag == 1)
      u=.3 + rand(1,npts)*0.01; % Gerar o sinal de entrada com ruido;
@@ -109,21 +108,17 @@ for k=5:npts
 end
 
 figure;
-plot(Tempo,y', 'b')
+plot(t,y', 'b')
 hold on
-plot( Tempo, yest', 'r' )
-err = y-yest
-plot(Tempo,err, 'r');
+plot( t, yest', 'r' )
 hold off
-legend('original','estimado' 'erro')
+legend('original','estimado')
 
 % Salvar dados y e u :
-% trail = ['./results/',folderName];
-% if (~exist(trail)) mkdir(trail);end   
-% save([trail, '/y.dat'],'y', '-ascii')
-% save([trail, '/yest.dat'],'y', '-ascii')
-% save([trail, '/err.dat'],'y', '-ascii')
-% save ([trail, '/u.dat'], 'u', '-ascii')
+trail = ['./results/',folderName];
+if (~exist(trail)) mkdir(trail);end   
+save([trail, '/y.dat'],'y', '-ascii')
+save ([trail, '/u.dat'], 'u', '-ascii')
 
   
 

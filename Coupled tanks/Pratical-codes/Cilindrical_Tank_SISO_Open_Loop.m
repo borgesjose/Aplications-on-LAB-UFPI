@@ -34,7 +34,7 @@ recebe(3)
 set_pwm_duty(1,1,freq); 
 
 Qde_amostras =800; %Quantidade de amostras do gráfico
-npts = degrau_flag;
+npts = Qde_amostras;
 
 if(ruido_flag == 1)
      u=.3 + rand(1,npts)*0.01; % Gerar o sinal de entrada com ruido;
