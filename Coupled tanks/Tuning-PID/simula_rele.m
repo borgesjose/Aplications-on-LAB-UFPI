@@ -12,10 +12,10 @@
 %
 clear all;
 Tamostra = 1
-nptos = 100;
-d = 1;
+nptos = 30;
+d = 0.35;
 
-eps = 0.1;
+eps = 0.05;
 for t=1:5,
    u(t) = -d;e(t) = 0;y(t) = 0;tempo(t) = t*Tamostra;
 end;

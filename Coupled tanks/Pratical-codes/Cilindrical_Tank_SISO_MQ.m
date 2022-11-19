@@ -16,9 +16,6 @@ load y.dat
 load u.dat
 
 
-yy = smooth(y);
-%y = yy';
-
 %y = y(at:end);
 %u = u(at:end);
 
@@ -53,7 +50,6 @@ plot(yest, 'r');
 folderName = 'MQ';
 
 %%
-
 err = y-yest
 plot(err, 'r');
 
@@ -61,9 +57,6 @@ plot(y,'g');
 hold on;
 plot(yy, 'r');
 plot(ee, 'r');
-
-%%
-
 
 %%
 trail = ['./results/',folderName];

@@ -2,7 +2,7 @@ function [Kc,Ti,Td] = PID(Ctype),
 
       if (Ctype == 'ZN')
 
-            Kc = 0.37222;
+            Kc = 0.38768;
             Ti =  1.5;
             Td = 0.375;       
         end;

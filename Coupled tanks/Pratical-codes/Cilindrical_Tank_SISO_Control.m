@@ -1,88 +1,82 @@
- 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
 % Universidade Federal do Piauí                       %
 % Campus Ministro Petronio Portela                    %
 % Copyright 2022 -José Borges do Carmo Neto-          %
 % @author José Borges do Carmo Neto                   %
 % @email jose.borges90@hotmail.com                    %
-% cilindrical tank Aplication                         %
+% cilindrical tank Control                            %
 %                                                     %
 %  -- Version: 1.0  - 18/09/2022                      %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+global SerPIC
 
-% Main script for test of optimal controllers applied to a conical tank
+varlist = {'u','y', 'Tempo'};
+clear(varlist{:})
+clf(figure(1))
 
-%% Step 1, simulation definition:
-        %clear;clc;
-        format shortg;
-        data_horario_test = datestr(clock,'yyyy-mm-dd THH-MM-SS');
-       
-        Tsim = 360; % Total simulation time seconds
-        
-        PIDtype = 'ZN'; %'ZN' = Ziegle-Nichols , 'CC' = Choen Coon,'AT' = Astrom, 'PR' = Teacher tunning;
-        PIDflag = 1;
-        FuzzyType = 'T2';% 'T1' = Tipo 1, 'T2' = Tipo 2;
-        FT1type = 'L'; % L = input linear ; N = input non linear
-        FT2Itype = 'L'; % L = input linear ; N = input non linear
-        
-        
-        Opt_type = 'NO'; % AG = Genetic Algorithm ; PS = Particle Swarm ; NO = No optimization
-        
-        folderName = ['Teste-pratico', '-', FuzzyType,'-',Opt_type,'-',data_horario_test];
+format shortg;
+data_horario_test = datestr(clock,'yyyy-mm-dd THH-MM-SS');
+folderName = 'siso_control_cilindrical_tank';
 
-%%        
-        if(PIDflag) simName = 'PID';
-        else simName = FuzzyType;
-        end;
-        
-        %% Step 2 - Controller definition: 
+Ts = 1;  %Determinação do período de amostragem
 
-        [Kc,Ti,Td] = PID(PIDtype); % Type PID selection 
-        
-%% Step 3  - Controller definition:        
+freq = 3000; %Frequencia de atuação da bomba
 
-    if (PIDflag)
-        disp('lol')
-    else
-        
+Qde_amostras =800; %Quantidade de amostras do gráfico
+npts = Qde_amostras;
+
+%Flags
+
+PIDflag = 0;
+h_flag = 0;
+
+
+PIDtype = 'ZN'; %'ZN' = Ziegle-Nichols , 'CC' = Choen Coon,'AT' = Astrom, 'PR' = Teacher tunning;
+
+FuzzyType = 'T2';% 'T1' = Tipo 1, 'T2' = Tipo 2;
+FT1type = 'L'; % L = input linear ; N = input non linear
+FT2Itype = 'L'; % L = input linear ; N = input non linear
+
+%% 
+        patamar = 1;
+        passo = 0.20;
+        ref = ref_def(patamar,passo,npts) % Gerar degraus;   
+
+%% PID definition: 
+
+[Kc,Ti,Td] = PID(PIDtype); % Type PID selection
+
+%%
+if (PIDflag)
+    subfolderName = ['PID -',PIDtype,'-',data_horario_test];
+else  
     if (FuzzyType == 'T1'),
-        Am_min = 2;
         
+        Am_min = 2; 
         Am_max = 5;
         Theta_m_min = 45;
         Theta_m_max = 72;
         L = 2;
         
-        % o vetor parametros dá os valores das MF's
+        % o vetor parametros dá os valores das MF's:
         if (FT1type == 'L')
-            if (Opt_type == 'AG')
-                param = [-L,0,-L,0,L,0,L,-L,0,-L,0,L,0,L];
-            end;
-            if (Opt_type == 'PS')
-                param = [-1.1315,-0.9545,0,0, 0.4670, 0.5544, 0.7647, 1.2665, 1.2889, 1.4262, 1.8816, 1.9272, 2.0000, 2.0000];
-            end;
+            %param = load('T1_L.dat')
             
-            if (Opt_type == 'NO')
-                param = [-L,0,-L,0,L,0,L,-L,0,-L,0,L,0,L];
-            end;
-        
+            subfolderName = ['FUZZY -', FuzzyType,'-',FT1type,'-',PIDtype,'-',data_horario_test];
+            
         elseif (FT1type == 'N')
-            if (Opt_type == 'AG')
-                param = [-L,0,-L,0,L,0,L,-L,0,-L,0,L,0,L];
-            end;
-            if (Opt_type == 'PS')
-                param = [-L,0,-L,0,L,0,L,-L,0,-L,0,L,0,L];
-            end;            
-            if (Opt_type == 'NO')
-                param = [-L,0,-L,0,L,0,L,-L,0,-L,0,L,0,L];
-            end;
+            %param = load('T1_N.dat')
+            
+            subfolderName = ['FUZZY -', FuzzyType,'-',FT1type,'-',PIDtype,'-',data_horario_test];
+            
         end;
         
         
     end
     
     if (FuzzyType == 'T2'),
+        
         Am_min = 2;
         Am_max = 5;
         Theta_m_min = 45;
@@ -91,88 +85,56 @@
         
         % o vetor parametros dá os valores das MF's:        
         if (FT2Itype == 'L')
+            %param = load('T2_L.dat')
+            %param =[param,1,1];
             
-            %Resultado para PSO:
-            if (Opt_type == 'AG')
-                param = .3*ones(1,16);   
-            end;
+            subfolderName = [PIDtype, '-', FuzzyType,'-',FT2Itype,'-',PIDtype,'-',data_horario_test];
             
-            if (Opt_type == 'PS')
-                param = [ -4.0000,-3.9509,-2.9262,-2.7615,-1.5759,-1.5165,-0.9248,-0.7246,-0.2196, 1.1298, 1.5116, 1.6241, 1.7757, 2.8473,3.2940,4.0000];   
-            end;
-            
-            if (Opt_type == 'NO')
-                param = .3*ones(1,16); 
-            end;
-            
-        param =[param,1,1];    
-        elseif (FT2Itype == 'N')
-            param = [-2,-2,-2,-2,-2,-2,-2,-0.63817,0.63322,1.3364,1.3386,2]; % Dia 04/09/2022
-            if (Opt_type == 'NO')
-                param = .3*ones(1,12);
-            end;
+        elseif (FT2Itype == 'N')   
+            %param = load('T2_N.dat')
+            subfolderName = [PIDtype, '-', FuzzyType,'-',FT2Itype,'-',PIDtype,'-',data_horario_test];
 
         end;
         
     end
 
-    end      
-        %% Step 4, Aplication setings:
-        
-        global SerPIC
-        
-        varlist = {'u','y', 'Tempo'};
-        clear(varlist{:})
-        clf(figure(1))
-        
-        freq = 6000; %Frequencia de atuação da bomba
-        
-        Ts = 1; %  5~10s( Digital control systems,Landau,2006,p.32)
-        nptos = Tsim/Ts; %number point of simulation
-        ts = linspace(0,Tsim,nptos); % time vector
-        H=30; % Horizon
-      
-        set_pwm_duty(1,1,freq); %zerar PWM
+    end
+%%
+%Previnir erro de leitura
+recebe(1)
+recebe(2)
+recebe(3)
 
-        
-        u = zeros(nptos,1); % variavel de entrada
-        h = zeros(nptos,1); % variavel de saida
-        
-        ref_type = 'st'; % st = step ; us = upper stair ; ls = lower stair;
-        patamar = 0.15;
-        passo = 0.10;
+%zerar PWM
+set_pwm_duty(1,1,freq);
+
+%%
+
+
+  h = figure(1);  
+  hLine1 = line(nan, nan, 'Color','red');
+  title('Resposta ao Degrau Tanque ');
+  xlabel('Tempo (s)');
+        if (h_flag == 1)
+           ylabel('Altura da Coluna de agua'); 
+        else
+           ylabel('Leitura do Sensor');  
+        end
+  
+%% 
+     for k=5:nptos
        
-        ref = ref_def(patamar,passo,nptos);
-                
-          h = figure(1);  
-          hLine1 = line(nan, nan, 'Color','red');
-          title('Implementação Tanque ');
-          xlabel('Tempo (s)');
-          ylabel('Leitura Sensor');
+        if (h_flag == 1)
+           y(k) = mapfun(recebe(2),0.19,2.389,0,60); %Recebe o valor medido da altura e armazena 
+        else
+           y(k) = recebe(2); %Recebe o valor medido de armazena  
+        end
         
-          %Flag-acionar medida altura
-            flag_h = 0;
-        
-         k=1;
+        erro(k)= ref(k) - y(k);
+        rate(k)=(erro(k) - erro(k-1));%/Tc; %Rate of erro
         
         
-        %% Step 8, PLANT APLICATION;
-
-        while k < nptos
-            
-            if (flag_h == 1):
-               y(k) = mapfun(recebe(2),0.19,2.389,0,60); %Recebe o valor medido da altura e armazena 
-            else
-               y(k) = recebe(2); %Recebe o valor medido de armazena  
-            end
-            
-
-            erro(k)= ref(k) - y(k);
-           
-            
-            rate(k)=(erro(k) - erro(k-1));%/Tc; %Rate of erro
-
-            if (PIDflag)
+         if (PIDflag)
                 Ami = 1;
             else
                 if (FuzzyType == 'T1'),
@@ -188,249 +150,57 @@
                     
                 end
                 
-            end
+         end
+         
                         %Controlador:
 
                         Kp(k)= Kc/Ami;
                         Kd(k)= (Td)*Kc/Ami;
                         Ki(k)= (Kc/Ami)/(Ti);
 
-                        alpha = (Kc/Ami)*(1+((Td)/Ts)+(Ts/(2*(Ti))));
-                        beta = -(Kc/Ami)*(1+2*((Td)/Ts)-(Ts/(2*(Ti))));
-                        gama = (Kc/Ami)*(Td)/Ts;
+                        alpha = (Kc/Ami)*(1+((Td)/Tamostra)+(Tamostra/(2*(Ti))));
+                        beta = -(Kc/Ami)*(1+2*((Td)/Tamostra)-(Tamostra/(2*(Ti))));
+                        gama = (Kc/Ami)*(Td)/Tamostra;
 
-                        u(k)= u(k-1) + alpha*erro(k) + beta*erro(k-1) + gama*erro(k-2);                      
-
-                        %saturation:
-                        if(u(k)<0) u(k)=0;end;
-                        if(u(k)>1) u(k)=1;end;
-                        
-              set_pwm_duty(1,u(k),freq);
-              
-              x1 = get(hLine1, 'XData');  
-              y1 = get(hLine1, 'YData');  
-              x1 = [x1 k*Ts];  
-              y1 = [y1 y(k)];  
-              set(hLine1, 'XData', x1, 'YData', y1);  
-              k=k+1;
-              Tempo(k) = k*Ts;
-              tempo(k)=Tempo(k);
-              pause(Ts);
-
-        end
-        set_pwm_duty(1,1,freq);
-        %% Step 7, Saving and ploting results
+                        if (flag_load_dist) 
+                            u(k)= u(k-1) + alpha*erro(k) + beta*erro(k-1) + gama*erro(k-2) + disturbio(k);
+                        else
+                            u(k)= u(k-1) + alpha*erro(k) + beta*erro(k-1) + gama*erro(k-2);
+                        end;
         
-        if (PIDflag)
-            ISE_pid  = objfunc(erro,tempo,'ISE')
-            ITSE_pid = objfunc(erro,tempo,'ITSE')
-            ITAE_pid = objfunc(erro,tempo,'ITAE')
-            IAE_pid  = objfunc(erro,tempo,'IAE')
-            
-            I_pid = esforco_ponderado(erro,u,H,100)
-            IG_pid = IG(H,1e4,1e9,1,u,ref,h)
-            
-            sy_pid = var(h)
-            su_pid = var(u)
-            
-            fileName = ['Resluts for PID - ' ,' - ', Opt_type , ' - ', PIDtype,' - ',ref_type,' - ',simName];
-            trail = ['./results/',folderName];
-            if (~exist(trail)) mkdir(trail);end   
-            save( [trail,'/',fileName])
 
-           %[fig1,fig2] =  p_pid(ts,h,ref,u,tempo,Kp,Kd,Ki)
-            
-        elseif(Opt_type ~= 'NO'),
-            
-            if (FuzzyType == 'T1') 
-            
-                if (FT1type == 'L')
-                    I_t1 = esforco_ponderado(erro,u,H,100)
+      %saturation:
+          if(u(k)<0.05) u(k)=0.05;end;
+          if(u(k)>0.5) u(k)=0.5;end;
+      
+      
+      set_pwm_duty(1,u(k),freq);
+      x1 = get(hLine1, 'XData');  
+      y1 = get(hLine1, 'YData');  
+      x1 = [x1 k*Ts];  
+      y1 = [y1 y(k)];  
+      set(hLine1, 'XData', x1, 'YData', y1);  
+      %k=k+1;
+      Tempo(k) = k*Ts;
+      pause(Ts);
+     end
+  
+ %zerar bomba
+ set_pwm_duty(1,1,freq); 
+ 
+%Plotar sinal de controle 
+hold on
+plot(Tempo,u,'b');
+hold off; 
 
-                    ISE_t1  = objfunc(erro,tempo,'ISE')
-                    ITSE_t1 = objfunc(erro,tempo,'ITSE')
-                    ITAE_t1 = objfunc(erro,tempo,'ITAE')
-                    IAE_t1  = objfunc(erro,tempo,'IAE')
-
-                    IG_t1 = IG(H,1e4,1e9,1,u,ref,h)
-
-                    sy_t1= var(h)
-                    su_t1 = var(u)
-
-                fileName = ['Resluts for PID - FT1-FG ' ,' - ', Opt_type , ' - ', PIDtype, ' - ', FuzzyType ,' - ' , FT1type, ' - ',ref_type,' - ',simName];
-                trail = ['./results/', Opt_type,'/',folderName];
-                if (~exist(trail)) mkdir(trail);end   
-                save( [trail,'/',fileName])
+% Salvar dados:
+trail = ['./results/',folderName,'/',subfolderName];
+if (~exist(trail)) mkdir(trail);end   
+save([trail, '/y.dat'],'y', '-ascii')
+save ([trail, '/u.dat'], 'u', '-ascii')
+save([trail, '/Tempo.dat'],'y', '-ascii')
+save ([trail, '/ref.dat'], 'u', '-ascii')
+save([trail, '/erro.dat'],'y', '-ascii')
+save ([trail, '/rate.dat'], 'u', '-ascii')
 
 
-                 %p_ft1(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
-
-                elseif (FT1type == 'N')
-                    I_t1 = esforco_ponderado(erro,u,H,100)
-
-                    ISE_t1  = objfunc(erro,tempo,'ISE')
-                    ITSE_t1 = objfunc(erro,tempo,'ITSE')
-                    ITAE_t1 = objfunc(erro,tempo,'ITAE')
-                    IAE_t1  = objfunc(erro,tempo,'IAE')
-
-                    IG_t1 = IG(H,1e4,1e9,1,u,ref,h)
-
-                    sy_t1= var(h)
-                    su_t1 = var(u)
-
-                    fileName = ['Resluts for PID - FT1-FG ' ,' - ', Opt_type , ' - ', PIDtype, ' - ', FuzzyType ,' - ' , FT1type, ' - ',ref_type,' - ',simName];
-                    trail = ['./results/', Opt_type,'/',folderName];
-                    if (~exist(trail)) mkdir(trail);end   
-                    save( [trail,'/',fileName])
-
-                  % p_ft1_nl(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
-
-                end;
-            
-            
-        elseif (FuzzyType == 'T2'),
-            
-            if (FT2Itype == 'L')
-                I_t2_li = esforco_ponderado(erro,u,H,100)
-                
-                ISE_t2_li  = objfunc(erro,tempo,'ISE')
-                ITSE_t2_li = objfunc(erro,tempo,'ITSE')
-                ITAE_t2_li = objfunc(erro,tempo,'ITAE')
-                IAE_t2_li  = objfunc(erro,tempo,'IAE')
-                
-                IG_t2_li = IG(H,1e4,1e9,1,u,ref,h)
-                
-                sy_t2_li= var(h)
-                su_t2_li = var(u)
-                
-                fileName = ['Resluts for PID - FT2-FG ' ,' - ', Opt_type , ' - ', PIDtype, ' - ', FuzzyType ,' - ' , FT2Itype, ' - ',ref_type,' - ',simName];
-                
-                trail = ['./results/', Opt_type,'/',folderName];
-                if (~exist(trail)) mkdir(trail);end   
-                save( [trail,'/',fileName])
-                
-               % p_ft2(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
-                
-            elseif (FT2Itype == 'N')
-                I_t2_nli = esforco_ponderado(erro,u,H,100)
-                
-                ISE_t2_nli  = objfunc(erro,tempo,'ISE')
-                ITSE_t2_nli = objfunc(erro,tempo,'ITSE')
-                ITAE_t2_nli = objfunc(erro,tempo,'ITAE')
-                IAE_t2_nli  = objfunc(erro,tempo,'IAE')
-                
-                IG_t2_nli = IG(H,1e4,1e9,1,u,ref,h)
-                
-                sy_t2_nli= var(h)
-                su_t2_nli = var(u)
-              
-                fileName = ['Resluts for PID - FT2-FG ' ,' - ', Opt_type , ' - ', PIDtype, ' - ', FuzzyType ,' - ' , FT2Itype, ' - ',ref_type,' - ',simName];
-                
-                trail = ['./results/', Opt_type,'/',folderName];
-                if (~exist(trail)) mkdir(trail);end   
-                save( [trail,'/',fileName])
-                
-               % p_ft2(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
-                
-            end;
-             
-            end;
-            
-        else
-            if (FuzzyType == 'T1') 
-            
-                if (FT1type == 'L')
-                    I_t1_no = esforco_ponderado(erro,u,H,100)
-
-                    ISE_t1_no  = objfunc(erro,tempo,'ISE')
-                    ITSE_t1_no = objfunc(erro,tempo,'ITSE')
-                    ITAE_t1_no = objfunc(erro,tempo,'ITAE')
-                    IAE_t1_no  = objfunc(erro,tempo,'IAE')
-
-                    IG_t1_no = IG(H,1e4,1e9,1,u,ref,h)
-
-                    sy_t1_no= var(h)
-                    su_t1_no = var(u)
-
-                fileName = ['Resluts for PID - FT1-FG ' ,' - ', Opt_type , ' - ', PIDtype, ' - ', FuzzyType ,' - ' , FT1type, ' - ',ref_type,' - ',simName];
-                trail = ['./results/', Opt_type,'/',folderName];
-                if (~exist(trail)) mkdir(trail);end   
-                save( [trail,'/',fileName])
-
-
-                 %p_ft1(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
-
-                elseif (FT1type == 'N')
-                    I_t1 = esforco_ponderado(erro,u,H,100)
-
-                    ISE_t1_n_no  = objfunc(erro,tempo,'ISE')
-                    ITSE_t1_n_no = objfunc(erro,tempo,'ITSE')
-                    ITAE_t1_n_no = objfunc(erro,tempo,'ITAE')
-                    IAE_t1_n_no  = objfunc(erro,tempo,'IAE')
-
-                    IG_t1_n_no = IG(H,1e4,1e9,1,u,ref,h)
-
-                    sy_t1_n_no = var(h)
-                    su_t1_n_no = var(u)
-
-                    fileName = ['Resluts for PID - FT1-FG ' ,' - ', Opt_type , ' - ', PIDtype, ' - ', FuzzyType ,' - ' , FT1type, ' - ',ref_type,' - ',simName];
-                    trail = ['./results/', Opt_type,'/',folderName];
-                    if (~exist(trail)) mkdir(trail);end   
-                    save( [trail,'/',fileName])
-
-                   %p_ft1_nl(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
-
-                end;
-            
-            
-        elseif (FuzzyType == 'T2'),
-            
-            if (FT2Itype == 'L')
-                I_t2_li_no = esforco_ponderado(erro,u,H,100)
-                
-                ISE_t2_li_no  = objfunc(erro,tempo,'ISE')
-                ITSE_t2_li_no = objfunc(erro,tempo,'ITSE')
-                ITAE_t2_li_no = objfunc(erro,tempo,'ITAE')
-                IAE_t2_li_no  = objfunc(erro,tempo,'IAE')
-                
-                IG_t2_li_no = IG(H,1e4,1e9,1,u,ref,h)
-                
-                sy_t2_li_no= var(h)
-                su_t2_li_no = var(u)
-                
-                fileName = ['Resluts for PID - FT2-FG ' ,' - ', Opt_type , ' - ', PIDtype, ' - ', FuzzyType ,' - ' , FT2Itype, ' - ',ref_type,' - ',simName];
-                
-                trail = ['./results/', Opt_type,'/',folderName];
-                if (~exist(trail)) mkdir(trail);end   
-                save( [trail,'/',fileName])
-                
-               % p_ft2(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
-                
-            elseif (FT2Itype == 'N')
-                I_t2_nli = esforco_ponderado(erro,u,H,100)
-                
-                ISE_t2_nli_no  = objfunc(erro,tempo,'ISE')
-                ITSE_t2_nli_no = objfunc(erro,tempo,'ITSE')
-                ITAE_t2_nli_no = objfunc(erro,tempo,'ITAE')
-                IAE_t2_nli_no  = objfunc(erro,tempo,'IAE')
-                
-                IG_t2_nli_no = IG(H,1e4,1e9,1,u,ref,h)
-                
-                sy_t2_nli_no= var(h)
-                su_t2_nli_no = var(u)
-              
-                fileName = ['Resluts for PID - FT2-FG' ,' - ', Opt_type , ' - ', PIDtype, ' - ', FuzzyType ,' - ' , FT2Itype, ' - ',ref_type,' - ',simName];
-                
-                trail = ['./results/', Opt_type,'/',folderName];
-                if (~exist(trail)) mkdir(trail);end   
-                save( [trail,'/',fileName])
-                
-                %p_ft2(ts,h,ref,u,tempo,Kp,Kd,Ki,Am)
-                
-            end;
-            
-             
-            end
-            
-        end;
-        
