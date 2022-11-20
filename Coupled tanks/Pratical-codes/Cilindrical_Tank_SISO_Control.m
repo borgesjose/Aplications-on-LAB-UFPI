@@ -61,13 +61,11 @@ else
         
         % o vetor parametros dá os valores das MF's:
         if (FT1type == 'L')
-            %param = load('T1_L.dat')
-            
+            param = load('T1_L.dat')
             subfolderName = ['FUZZY -', FuzzyType,'-',FT1type,'-',PIDtype,'-',data_horario_test];
             
         elseif (FT1type == 'N')
-            %param = load('T1_N.dat')
-            
+            param = load('T1_N.dat')
             subfolderName = ['FUZZY -', FuzzyType,'-',FT1type,'-',PIDtype,'-',data_horario_test];
             
         end;
@@ -85,13 +83,12 @@ else
         
         % o vetor parametros dá os valores das MF's:        
         if (FT2Itype == 'L')
-            %param = load('T2_L.dat')
-            %param =[param,1,1];
-            
+            param = load('T2_L.dat')
+            param =[param,1,1];
             subfolderName = [PIDtype, '-', FuzzyType,'-',FT2Itype,'-',PIDtype,'-',data_horario_test];
             
         elseif (FT2Itype == 'N')   
-            %param = load('T2_N.dat')
+            param = load('T2_N.dat')
             subfolderName = [PIDtype, '-', FuzzyType,'-',FT2Itype,'-',PIDtype,'-',data_horario_test];
 
         end;
