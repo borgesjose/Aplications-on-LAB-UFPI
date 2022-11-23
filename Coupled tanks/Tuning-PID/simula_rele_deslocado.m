@@ -1,4 +1,4 @@
-                                                    %	Modelagem da função de transferência: Relé com histerese 
+ %	Modelagem da função de transferência: Relé com histerese 
 
 %
 % --- Função de transferência discreta

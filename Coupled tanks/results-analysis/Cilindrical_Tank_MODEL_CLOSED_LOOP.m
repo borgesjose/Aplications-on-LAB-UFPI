@@ -4,62 +4,48 @@
 % Copyright 2022 -José Borges do Carmo Neto-         %
 % @author José Borges do Carmo Neto                  %
 % @email jose.borges90@hotmail.com                    %
-% cilindrical tank MQ Identification                  %
+% Closed loop model                                   %
 %                                                     %
 %  -- Version: 1.0  - 25/09/2022                      %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-    npts = 799;
+npts = 799;
 
-load y.dat
-load u.dat
-
-plot(y)
-hold on
-plot(u)
-%%
-%y = y(at:end);
-%u = u(at:end);
-
-at = 2;
-Y = [];
-fi = [];
-
-for j = 1:npts
-    if j<=2
-        y1 = 0; y2 = 1; u1=0;u2=0;
-    else y1=y(j-1);  y2=y(j-2);  u1=u(j-1);  u2=u(j-2);
-    end;
-    
-   Y=[Y; y(j)]; fi=[fi;  -y1 -y2 u1 u2];  
-   
-end;
-teta = inv(fi'*fi)*fi'*Y
-
-for t=1:2,
+for t=1:npts,
     yest(t)=0;
+    u(t)= 0;
+    ref(t) = 0.3;
 end;
 
+load teta.dat
 a1=teta(1);a2=teta(2);b1=teta(3);b2=teta(4);
 
 for t=5:npts,
+    
+    
+    
     yest(t) = -a1*yest(t-3)-a2*yest(t-4)+b1*u(t-3)+b2*u(t-4);
+    erro(t)= ref(t) - yest(t);
+    u(t) = erro(t);
+    
+    
+    
 end;
-%%
-plot(y,'g');
+
+plot(yest,'g');
 hold on;
-plot(yest, 'r');
-folderName = 'MQ-2';
+%plot(u, 'r');
+folderName = 'model-closed-loop';
 
 %%
-err = y-yest
+err = yest
 plot(err, 'r');
 
 plot(y,'g');
 hold on;
-plot(y, 'd');
-%plot(err, 'r');
+plot(yy, 'r');
+plot(ee, 'r');
 
 %%
 trail = ['./results/',folderName];

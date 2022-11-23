@@ -74,7 +74,7 @@ ftz = (b1*(z^-1)+ b2*(z^-2))/(1 + a1*(z^-1))
 %%
 uiopen('RESPOSTA AO DEGRAU - U-0_08-1.fig',1)
 opt = stepDataOptions;
-opt.StepAmplitude = .08;
+opt.StepAmplitude = .4;
 hold on
 step(fts,opt)
 step(ftz,opt)
