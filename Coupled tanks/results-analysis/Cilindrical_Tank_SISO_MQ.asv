@@ -16,22 +16,15 @@ npts = 799;
 load y.dat
 load u.dat
 
-%% CARREGAR DADOS DE .FIG
-
-open('Degrau.fig');
-a = get(gca,'Children');
-xdata = get(a, 'XData');
-ydata = get(a, 'YData');
-A = cell2mat(ydata);
-y = A(2,:);
-u = A(1,:);
-y = y(2:end);
-%%
-figure
 plot(y)
 hold on
 plot(u)
+
 %%
+%%
+%y = y(at:end);
+%u = u(at:end);
+
 at = 2;
 Y = [];
 fi = [];
@@ -56,7 +49,6 @@ a1=teta(1);a2=teta(2);b1=teta(3);b2=teta(4);
 for t=5:npts,
     yest(t) = -a1*yest(t-3)-a2*yest(t-4)+b1*u(t-3)+b2*u(t-4);
 end;
-
 %%
 plot(y,'g');
 hold on;

@@ -18,7 +18,7 @@ for t=1:npts,
     ref(t) = 0.3;
 end;
 
-load teta.dat
+%load teta.dat
 a1=teta(1);a2=teta(2);b1=teta(3);b2=teta(4);
 
 for t=5:npts,
