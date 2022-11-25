@@ -40,9 +40,9 @@ k2 = b/(pi*(R/H)^2)
 % -------------------
 %    1 + Ts  
 
-G = 28
+G = 5.11
 
-T = 32
+T = 68-12
 
 L = 12 % Atraso de Transporte Caracteristico da planta
 
@@ -59,7 +59,7 @@ fts = (G*exp(-s*L))/(1+T*s)
 % ------------------------
 %       1 - a1 z^-1  
 
-Ts = 10 % tempo de amostragem ( Landau,2006)
+Ts = 1 % tempo de amostragem ( Landau,2006)
 
 b1 = G*( 1 - exp((L - Ts)/T))
 
@@ -71,10 +71,20 @@ z = tf('z', Ts )
 
 ftz = (b1*(z^-1)+ b2*(z^-2))/(1 + a1*(z^-1))
 
+teta = [a1,b1,b2]
+
 %%
-uiopen('RESPOSTA AO DEGRAU - U-0_08-1.fig',1)
+folderName = 'Metodo de Hagglund';
+trail = ['./results/',folderName];
+if (~exist(trail)) mkdir(trail);end   
+%save([trail, '/y.dat'],'y', '-ascii')
+%save ([trail, '/u.dat'], 'u', '-ascii')
+save ([trail, '/teta.dat'], 'teta', '-ascii')
+
+%%
+uiopen('resposta ao degrau com ruido.fig',1)
 opt = stepDataOptions;
-opt.StepAmplitude = .1;
+opt.StepAmplitude = .3;
 hold on
 step(fts,opt)
 step(ftz,opt)
