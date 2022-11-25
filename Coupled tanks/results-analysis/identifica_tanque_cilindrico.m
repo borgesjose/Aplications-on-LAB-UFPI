@@ -12,7 +12,7 @@
 %%
 % Dados do tanque cilidrico
 
-H = 70 % Altura
+H = 70 % Altura 
 R = 3.75 % Raio
 h0 = 30 % Altura a ser linearizado
 g = 9.81 % gravidade
