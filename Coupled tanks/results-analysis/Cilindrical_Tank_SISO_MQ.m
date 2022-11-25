@@ -56,14 +56,14 @@ a1=teta(1);a2=teta(2);b1=teta(3);b2=teta(4);
 for t=5:npts,
     yest(t) = -a1*yest(t-3)-a2*yest(t-4)+b1*u(t-3)+b2*u(t-4);
 end;
-
+ 
 %%
 plot(y,'g');
 hold on;
 plot(yest, 'r');
 folderName = 'MQ-2';
 
-%%
+%% 
 err = y-yest
 plot(err, 'r');
 

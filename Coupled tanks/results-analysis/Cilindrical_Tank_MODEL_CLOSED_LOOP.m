@@ -1,8 +1,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
-% Universidade Federal do Piauí                      %
+% Universidade Federal do Piauí                       %
 % Campus Ministro Petronio Portela                    %
-% Copyright 2022 -José Borges do Carmo Neto-         %
-% @author José Borges do Carmo Neto                  %
+% Copyright 2022 -José Borges do Carmo Neto-          %
+% @author José Borges do Carmo Neto                   %
 % @email jose.borges90@hotmail.com                    %
 % Closed loop model                                   %
 %                                                     %
@@ -17,7 +17,11 @@ for t=1:npts,
     ref(t) = 0.3;
 end;
 
-%load teta.dat
+
+load teta.dat
+a1=teta(1);a2=teta(2);b1=teta(3);b2=teta(4);
+
+
 a1=teta(1);a2=teta(2);b1=teta(3);b2=teta(4);
 
 for t=5:npts,

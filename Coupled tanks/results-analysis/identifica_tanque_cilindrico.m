@@ -1,4 +1,4 @@
- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
 % Universidade Federal do Piauí                       %
 % Campus Ministro Petronio Portela                    %
 % Copyright 2022 -José Borges do Carmo Neto-          %
@@ -80,7 +80,7 @@ if (~exist(trail)) mkdir(trail);end
 %save([trail, '/y.dat'],'y', '-ascii')
 %save ([trail, '/u.dat'], 'u', '-ascii')
 save ([trail, '/teta.dat'], 'teta', '-ascii')
-
+ 
 %%
 uiopen('resposta ao degrau com ruido.fig',1)
 opt = stepDataOptions;
