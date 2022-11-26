@@ -18,7 +18,7 @@ fip=atan(eps/sqrt(a^2-eps^2))
 %fip=angle(gw);
 %%
 %omega = 2.618;
-
+Metodo de Hagglund
 %*********Especificações*************
 fim=0.01;
 rs=0.05*rp;

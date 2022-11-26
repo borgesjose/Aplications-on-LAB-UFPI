@@ -7,6 +7,7 @@
 %       z^2 - 1.5143 z^1 + 0.5506
 % --- Período de amostragem: 1
 %
+
 clear all;
 Tamostra = 1
 nptos = 30;

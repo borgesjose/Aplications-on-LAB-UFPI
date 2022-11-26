@@ -134,8 +134,6 @@ for j=(n/2):(n/2)+ceil(p),
 end
 Kp = num/den;
     
-    
-    
 %%
     Ku = -1/gw;
     Tu = (2*pi)/w; 
