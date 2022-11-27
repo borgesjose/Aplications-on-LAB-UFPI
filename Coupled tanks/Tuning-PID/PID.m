@@ -1,217 +1,43 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
-% Universidade Federal do Piauí                       %
-% Campus Ministro Petronio Portela                    %
-% Copyright 2022 -José Borges do Carmo Neto-          %
-% @author José Borges do Carmo Neto                   %
-% @email jose.borges90@hotmail.com                    %
-%  PID controller for the Phase                      %
-%  and Gain Margins of the System                     % 
-%                                                     %
-%  -- Version: 2.0  - 13/08/2022                      %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-PIDtype = 'FG'; %'ZN' = Ziegle-Nichols , 'CC' = Choen Coon,'AT' = Astrom, 'PR' = Teacher tunning;
-%% Definir o vetor tempo:
-Ts = 1; % periodo de amostragem para processo de um tanque ( Landau,2006)
-Tsim = 800;
-nptos = Tsim/Ts;
-ts = linspace(0,Tsim,nptos);
-Tamostra = Ts;
+function [Kc,Ti,Td] = PID(Ctype),
 
-%% Dados do problema:
+      if (Ctype == 'ZN')
 
-
-
-u = zeros(nptos,1); % variavel de entrada
-h = zeros(nptos,1); % variavel de saida
-
-
-
-%% Relay Identification:
-% Agora é o momento de aplicar o relé a planta: (rele com histerese)
-% Chama a função rele com histerese passando os paramentros do rele e os polos e ganho do proceso de 2 ordem
-% Retorna o vetor yr, e ur com os resultados da aplicação do relé:
-
-n = 100; % Numero de pontos de análise
-d0 = 0.8; %3.8000e-04
-d = 0.5;
-dmax = d0+d;
-dmin = d0-d;
-eps = 0.1;
-
-
-[yr,ur] = histeresis_relay(n, Ts, d0, d, d, eps);
-    
-figure;
-grid;
-plot(yr,'c-');
-hold on;
-ddd = 1*10^3;
-plot(ur);
-
-%%
-% --- Calcula período
-kont = 0;								
-for t = 4:n,								
-   if ur(t) ~= ur(t-1)
-      kont = kont + 1;
-      ch(kont) = t;
-   end
-end
-
-%%
-Tu1 = (ch(7) - ch(6))*Tamostra;
-Tu2 = (ch(8) - ch(7))*Tamostra;
-Tu = Tu1 + Tu2 %Periodo critico;
-omega = (2*pi)/(Tu)
-
-%%
-aux1 = ch(5);aux2 = ch(7);
-i=0;
-for t=aux1:aux2;
-    i=i+1;
-    yi(i) = yr(t);ui(i)=ur(t)*10^3;
-    ti(i)=i*Tamostra;
-end
-%%
-a1 = 0.5*([0 yi]+[yi 0]).*([ti 0]-[0 ti]);
-a1 = sum(a1(1,2:length(yi)));
-%%
-a2 = 0.5*([0 ui]+[ui 0]).*([ti 0]-[0 ti]);
-a2 = sum(a2(1,2:length(ui)));
-%%
-Kp = a1/a2;
-
-%% --- Calcula valor de pico positivo
-arm = 0.15;										
-for t = aux1:aux2,
-   if yr(t) >= arm  arm = yr(t); end;
-end;
-Au = arm;
-
-%% --- Calcula valor de pico negativo
-arm = 0.15;										
-for t = aux1:aux2,
-   if yr(t) <= arm  arm = yr(t); end;
-end;
-Ad = arm;
-aa = (abs(Au) - abs(Ad));
-
-%% --- Calcula ganho critico
-Ku = (4*d)/(pi*sqrt(aa^2 - eps^2));
-%% --- Calculo do atraso de transporte
-
-teta = log(((d-d0)*Kp-eps)/((d-d0)*Kp+Ad))
-x1=(d+d)*Kp*exp(teta)-(d-d0)*Kp+eps
-x2=(d+d0)*Kp-eps
-
-tau1=Tu1/log(x1/x2)
-L=tau1*teta
-
-%% PID-FG Tuning:
-if(PIDtype == 'FG') 
-    % Definições do controlador:
-        Am = 5;
-
-        Am_min = 2; 
-        Am_max = 5;
-        Theta_m_min = 45;
-        Theta_m_max = 72;
-
-        Theta_m = (180/2)*(1-(1/Am));
-    % Equacionando:
-        w = (2*pi)/(Tu); 
-
-        L = 0.158;
-
-        c = 1/Kp;
-        b = sin(w*L)/(w*Ku);
-        a = (c + (cos(w*L)/Ku))/(w^2);
-    
-    % Sintonizanodo o controlador:
-
-        K = (pi/(2*Am*L))*[b;c;a];
-        Kc = K(1);
-        Ki = K(2);
-        Kd = K(3);
+            Kc = 0.27589;
+            Ti =  1.5;
+            Td = 0.375;       
+        end;
         
-    
-    Td = Kd/Kc;
-    Ti = Kc/Ki;   
-    
-end;
-
-%% ---  Ziegler-Nichols Tuning:
-if(PIDtype == 'ZN')    
-    Kc = 0.6*Ku
-    Ti = 0.5*Tu
-    Td = Ti/4
-    
-
-end;
-
-
-%% Aplicando o controlador - OLD version
-for i=1:nptos,
-    if (i<=nptos/2)  ref(i)=0.15; end;
-    if (i>nptos/2)   ref(i) = 0.2; end;
-end ;
-
-y(4)=0 ; y(3)=0 ; y(2)=0 ; y(1)=0 ; 
-u(1)=0 ; u(2)=0 ; u(3)=0; u(4)=0;
-
-erro(1)=1 ; erro(2)=1 ; erro(3)=1; erro(4)=1;
-
-rlevel = 0.0;
-ruido = rlevel*rand(1,nptos);
-        load teta.dat
-        a1=teta(1);a2=teta(2);b1=teta(3);b2=teta(4);
+        if (Ctype == 'CC')
+            Kc = .0001;
+            Ti = 0.2;
+            Td = 0.079;            
+        end;
         
-for i=5:nptos,
-    
-    Ami = 1;
-    h(i) = -a1*h(i-3)-a2*h(i-4)+b1*u(i-3)+b2*u(i-4);
-
-    erro(i)=ref(i)-h(i); %Erro
-    
-    
-    % new version
-%     alpha = Kc+ Kd/Tamostra + (Ki*Tamostra)/2;
-%     beta = -(Kc) - 2*((Kd)/Tamostra)+(Ki*Tamostra)/2;
-%     gama = (Kd)/Tamostra;
-    
-    %Controlador:
-    
-    %Kp(i)= Kc/Ami;
-    %Kd(i)= (Td)*Kc/Ami;
-    %Ki(i)= (Kc/Ami)/(Ti);
-    
-    alpha = (Kc/Ami)*(1+((Td)/Tamostra)+(Tamostra/(2*(Ti))));
-    beta = -(Kc/Ami)*(1+2*((Td)/Tamostra)-(Tamostra/(2*(Ti))));
-    gama = (Kc/Ami)*(Td)/Tamostra;
-    
-    u(i)= u(i-1) + alpha*erro(i) + beta*erro(i-1) + gama*erro(i-2);
+        if (Ctype == 'AT')
+            Kc = 0.049941;
+            Ti = 0.90969;
+            Td = 0.22742;            
+            
+        end;   
+        
+        if (Ctype == 'FG')
+             
+            K = AT_PID_FG(Am,L,a,b,c);
+            
+            Kc = K(1);
+            Ti = Kc/K(2);
+            Td = K(3)/Kc;
+            
+        end; 
+        
+        if(Ctype == 'PR')
+            disp("Selecione um controlador: ZN , CC, AT ") 
+            %SINTONIA PROFESSOR:
+            Kc = 0.37222;
+            Ti = 1.5;
+            Td = 0.375;
+            %Td = 0.0;
+        end; 
    
-    %saturation:
-    if(u(i)<5e-5) u(i)=5e-5;end;
-    if(u(i)>2*3.8000e-04) u(i)=2*3.8000e-04;end;
-    
-    tempo(i)=i*Tamostra;
-    fprintf('amostra:  %d \t entrada:  %6.6f \t saida:  %4.0f\n',i,u(i),h(i));
-    
-end ;
- 
- 
-      ISE_t2 = objfunc(erro,tempo,'ISE')
-     ITSE_t2 = objfunc(erro,tempo,'ITSE')
-     ITAE_t2 = objfunc(erro,tempo,'ITAE')
-     IAE_t2 = objfunc(erro,tempo,'IAE')
-     
-%plotar seinal de saida e  de controle:    
-figure;
-grid;
-plot(ts,h,'g-');
-hold on;
-plot(tempo,u);
-plot(tempo,ref);
-title(['AT-PID-FG:',num2str(rlevel), ' ISE:', num2str(ISE_t2), ', ITSE:' ,num2str(ITSE_t2),', IAE:' ,num2str(IAE_t2), ', ITAE:' ,num2str(ITAE_t2)])
 
+            

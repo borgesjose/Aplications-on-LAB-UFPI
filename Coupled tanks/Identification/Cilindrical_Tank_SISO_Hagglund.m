@@ -59,11 +59,13 @@ fts = (G*exp(-s*L))/(1+T*s)
 % ------------------------
 %       1 - a1 z^-1  
 
+
+
 Ts = 1 % tempo de amostragem ( Landau,2006)
 
 b1 = G*( 1 - exp((L - Ts)/T))
 
-b2 = G*exp(-Ts/T)*(exp(L/T)-1)
+b2 = G*exp(-Ts/T)*(exp(L/T)-1)  
 
 a1 = -exp(-Ts/T)
 
@@ -72,6 +74,13 @@ z = tf('z', Ts )
 ftz = (b1*(z^-1)+ b2*(z^-2))/(1 + a1*(z^-1))
 
 teta = [a1,b1,b2]
+% Pelo método de Hagglund;
+
+% --- Função de transferência discreta
+%          -1.1091 z + 1.1996
+%         -------------------
+%           z^2 + 0.9823 z^1 
+% --- Período de amostragem: 1
 
 %%
 folderName = 'Metodo de Hagglund';
@@ -79,8 +88,8 @@ trail = ['./results/',folderName];
 if (~exist(trail)) mkdir(trail);end   
 %save([trail, '/y.dat'],'y', '-ascii')
 %save ([trail, '/u.dat'], 'u', '-ascii')
-save ([trail, '/teta.dat'], 'teta', '-ascii')
- 
+save ([trail, '/teta_Hagglund.dat'], 'teta', '-ascii')
+
 %%
 uiopen('resposta ao degrau com ruido.fig',1)
 opt = stepDataOptions;

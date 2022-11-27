@@ -9,24 +9,25 @@
 %  -- Version: 1.0  - 25/09/2022                      %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
+dados = 'fig'
 npts = 799;
+if (dados == 'dat')
+    %% CARREGAR .DAT
+    load y.dat
+    load u.dat
+end
+if (dados == 'fig')
+    %% CARREGAR DADOS DE .FIG
 
-%% CARREGAR .DAT
-load y.dat
-load u.dat
-
-%% CARREGAR DADOS DE .FIG
-
-open('Degrau.fig');
-a = get(gca,'Children');
-xdata = get(a, 'XData');
-ydata = get(a, 'YData');
-A = cell2mat(ydata);
-y = A(2,:);
-u = A(1,:);
-y = y(2:end);
-%%
+    open('Degrau.fig');
+    a = get(gca,'Children');
+    xdata = get(a, 'XData');
+    ydata = get(a, 'YData');
+    A = cell2mat(ydata);
+    y = A(2,:);
+    u = A(1,:);
+end
+    %%
 figure
 plot(y)
 hold on
@@ -56,12 +57,26 @@ a1=teta(1);a2=teta(2);b1=teta(3);b2=teta(4);
 for t=5:npts,
     yest(t) = -a1*yest(t-3)-a2*yest(t-4)+b1*u(t-3)+b2*u(t-4);
 end;
- 
+
+% Pelo estimador de mínimos quadrados, tem-se;
+
+%             b1 z + b2
+% Gp(Z) = ------------------
+%          z^2 + a1 z + a2
+%
+
+% --- Função de transferência discreta
+%          -0.6336 z + 0.9054
+%       -------------------------
+%       z^2 + 0.5591 z^1 - 0.3840
+% --- Período de amostragem: 1
+%
+
 %%
 plot(y,'g');
 hold on;
 plot(yest, 'r');
-folderName = 'MQ-2';
+folderName = 'MQ';
 
 %% 
 err = y-yest
@@ -77,7 +92,7 @@ trail = ['./results/',folderName];
 if (~exist(trail)) mkdir(trail);end   
 %save([trail, '/y.dat'],'y', '-ascii')
 %save ([trail, '/u.dat'], 'u', '-ascii')
-save ([trail, '/teta.dat'], 'teta', '-ascii')
+save ([trail, '/teta_MQ.dat'], 'teta', '-ascii')
 
     
 

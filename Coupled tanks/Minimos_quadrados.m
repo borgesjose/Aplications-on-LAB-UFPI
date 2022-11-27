@@ -1,9 +1,8 @@
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
-% Universidade Federal do Piauí                       %
+% Universidade Federal do Piauí                      %
 % Campus Ministro Petronio Portela                    %
-% Copyright 2022 -José Borges do Carmo Neto-          %
-% @author José Borges do Carmo Neto                   %
+% Copyright 2022 -José Borges do Carmo Neto-         %
+% @author José Borges do Carmo Neto                  %
 % @email jose.borges90@hotmail.com                    %
 % Minimos Quadrados                                   %
 %                                                     %

@@ -21,9 +21,9 @@
         
         PIDtype = 'ZN'; %'ZN' = Ziegle-Nichols , 'CC' = Choen Coon,'AT' = Astrom, 'PR' = Teacher tunning;
         PIDflag = 1 ;
-        FuzzyType = 'T2';% 'T1' = Tipo 1, 'T2' = Tipo 2;
+        FuzzyType = 'T1';% 'T1' = Tipo 1, 'T2' = Tipo 2;
         FT1type = 'L'; % L = input linear ; N = input non linear
-        FT2Itype = 'L'; % L = input linear ; N = input non linear
+        FT2Itype = 'N'; % L = input linear ; N = input non linear
         N_membership_functions = '3';
         
         flag_load_dist = 0; 
