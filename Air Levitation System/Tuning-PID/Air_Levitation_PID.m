@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
 % Universidade Federal do Piauí                      %
 % Campus Ministro Petronio Portela                    %
-% Copyright 2022 -José Borges do Carmo Neto-         %
+% Copyright 2022 -Jose Borges do Carmo Neto-         %
 % @author José Borges do Carmo Neto                  %
 % @email jose.borges90@hotmail.com                    %
 % PID                                                 %
@@ -28,7 +28,7 @@ npts = Qde_amostras;
 
 PIDflag = 0;
 h_flag = 0;
-PIDtype = 'ZN';
+PIDtype = 'AT';
 
 %% PID definition: 
 
@@ -43,7 +43,7 @@ PIDtype = 'ZN';
         ref_type = 'st'; % st = step ; us = upper stair ; ls = lower stair;
     
         patamar = 50;
-        passo = 0;
+        passo = 20;
         ref = ref_def(patamar,passo,npts) % Gerar degraus;   
                 
         y(1)=0 ; y(2)=0 ; y(3)=0; y(4)=0;
@@ -90,10 +90,10 @@ b2 = 0.274777441417530
         
 
       %saturation:
-    if u(t) > 100
-        u(t) = 100;
-    elseif u(t) < 0
-        u(t) = 0;
+    if u(k) > 100
+        u(k) = 100;
+    elseif u(k) < 0
+        u(k) = 0;
     end
       
   
