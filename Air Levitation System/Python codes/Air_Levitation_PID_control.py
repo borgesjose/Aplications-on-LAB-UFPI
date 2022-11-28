@@ -144,6 +144,7 @@ Td = 0.49225;
 
 # amostras = int(input("Defina a quantidade de amostras: "))
 # valor_altura = input("Defina o valor de altura em milímetros: ")
+
 patamar = 50
 passo = 20
 ref = []
@@ -156,6 +157,11 @@ for amostra in range(amostras):
         ref.append(patamar + passo)
     if amostra>3*amostras/4:
         ref.append(patamar + passo)
+
+#Senoidal
+
+#for amostra in range(amostras):
+ #   ref   = 50 + 20*np.sin(amostra*Ts)
 
 
 valor_altura_float = [float(i) for i in ref]
@@ -180,7 +186,7 @@ for amostra in range(amostras):
  
     
     # MALHA FECHADA
-    erro.append((valor_altura_float - alturas[-1])/10)
+    erro.append((valor_altura_float[k] - alturas[-1])/10)
 
    # Controlador:
     Ami = 1;

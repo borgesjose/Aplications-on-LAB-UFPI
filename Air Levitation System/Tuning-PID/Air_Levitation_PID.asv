@@ -32,7 +32,7 @@ PIDtype = 'AT';
 
 %% PID definition: 
 
-        Ts = 0.06; %  5~10s
+        Ts = 0.06; %  5~10s( Digital control systems,Landau,2006,p.32)
 
         ts = linspace(0,Qde_amostras,npts); % time vector
         H=npts; % Horizon
@@ -44,12 +44,12 @@ PIDtype = 'AT';
     
         patamar = 50;
         passo = 20;
-        %ref = ref_def(patamar,passo,npts) % Gerar degraus;
+        ref = ref_def(patamar,passo,npts) % Gerar degraus;
         
         patamar = 50;
-        f=.002;
-        amp = 10;
-        ref = ref_def_sin(patamar,amp,f,npts,npts,Qde_amostras)% Gerar referencia senoidal
+        f=.05;
+        amp = 20;
+        ref = ref_def_sin(patamar,amp,f,npts)% Gerar referencia senoidal
                 
         y(1)=0 ; y(2)=0 ; y(3)=0; y(4)=0;
         u(1)=0 ; u(2)=0 ; u(3)=0; u(4)=0;
@@ -95,7 +95,7 @@ b2 = 0.274777441417530
         
 
       %saturation:
-    if u(k) > 100;
+    if u(k) > 100
         u(k) = 100;
     elseif u(k) < 0
         u(k) = 0;
