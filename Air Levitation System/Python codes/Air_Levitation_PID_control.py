@@ -123,6 +123,8 @@ controle = [0] # VARIÁVEL DE CONTROLE (u)
 amostras = 500
 # tempo = []
 erro = [0,0]
+rate = [0,0]
+
 # x = []
 
 a1 = -0.955255265000912
@@ -131,9 +133,14 @@ b1 = 0.026243849901936
 b2 = 0.274777441417530
 
 # Controle
-g0 = 0.8688
-g1 = a1*g0
-g2 = a2*g0
+Kp = [0,0];
+Kd = [0,0];
+Ki = [0,0];
+
+Kc = 0.04028;
+Ti = 1.969;
+Td = 0.49225;
+
 
 # amostras = int(input("Defina a quantidade de amostras: "))
 valor_altura = input("Defina o valor de altura em milímetros: ")
@@ -147,7 +154,7 @@ valor_altura_float = float(valor_altura)
 # PREPARAÇÃO:
 pre_medicao(ligar)
 tempo_inicio_laco = time.time()
-
+k=0;
 # LAÇO DE AQUISIÇÃO:
 for amostra in range(amostras):
     # plt.pause(0.01)
@@ -155,12 +162,25 @@ for amostra in range(amostras):
     alturas.append(int(altura(medicao)))
     print("--- %s seconds ---" % (time.time() - tempo_inicio_amostra))
     
-    # MALHA ABERTA
-    # controle.append(valor_pwm_float)
+ 
     
     # MALHA FECHADA
     erro.append((valor_altura_float - alturas[-1])/10)
-    controle.append(controle[-1] + g0*erro[-1] + g1*erro[-2] + g2*erro[-3])
+
+   # Controlador:
+    Ami = 1;
+    Kp.append(Kc/Ami);
+    Kd.append((Td)*Kc/Ami)
+    Ki.append((Kc/Ami)/(Ti))
+
+    alpha = (Kc/Ami)*(1+((Td)/Tamostra)+(Tamostra/(2*(Ti))));
+    beta = -(Kc/Ami)*(1+2*((Td)/Tamostra)-(Tamostra/(2*(Ti))));
+    gama = (Kc/Ami)*(Td)/Tamostra;
+
+               
+    u = controle[-1] + alpha*erro[-1] + beta*erro[-2] + gama*erro[-3];
+
+    controle.append(u)
     
     # SATURAÇÃO 
     if controle[-1] > 80:
@@ -176,6 +196,7 @@ for amostra in range(amostras):
     # x.append(amostra)
     # plt.plot(x, alturas, 'r')
     # plt.title("Teste")
+    k=k+1;
     
         
 # PÓS AQUISIÇÃO

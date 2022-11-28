@@ -71,11 +71,11 @@ b2 = 0.274777441417530
         
         
          
-        Ami = 1;
+        
  
          
                         %Controlador:
-
+                        Ami = 1;
                         Kp(k)= Kc/Ami;
                         Kd(k)= (Td)*Kc/Ami;
                         Ki(k)= (Kc/Ami)/(Ti);
