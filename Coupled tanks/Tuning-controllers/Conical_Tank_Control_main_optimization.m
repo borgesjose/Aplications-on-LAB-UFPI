@@ -20,8 +20,8 @@
         Tsim = 500; % Total simulation time
         
         PIDtype = 'ZN'; %'ZN' = Ziegle-Nichols , 'CC' = Choen Coon,'AT' = Astrom, 'PR' = Teacher tunning;
-        PIDflag = 1 ;
-        FuzzyType = 'T1';% 'T1' = Tipo 1, 'T2' = Tipo 2;
+        PIDflag = 0;
+        FuzzyType = 'T2';% 'T1' = Tipo 1, 'T2' = Tipo 2;
         FT1type = 'L'; % L = input linear ; N = input non linear
         FT2Itype = 'N'; % L = input linear ; N = input non linear
         N_membership_functions = '3';
@@ -33,10 +33,11 @@
     
         flag_model_severance = 0;
         
-        Opt_type = 'NO'; % AG = Genetic Algorithm ; PS = Particle Swarm ; NO = No optimization
+        Opt_type = 'PS'; % AG = Genetic Algorithm ; PS = Particle Swarm ; NO = No optimization
         
         folderName = ['round-2', '-', FuzzyType,'-',Opt_type,'-',data_horario_test];
 
+        
 %%        
         if(PIDflag) simName = 'PID';
         else simName = FuzzyType;
@@ -57,7 +58,7 @@
         %% Step 6, Definições de otimização:
        
         % PSO
-            pso.noP = 64;
+            pso.noP = 128;
             pso.maxIter = 100;
             pso.wMax = 0.9;
             pso.wMin= 0.2;
@@ -86,7 +87,7 @@
             ag.visFlag = 1;
             ag.folder = folderName;
    
-            L = 2;
+            L = 12;
         %% Step 7, Otimização:
         
         if(Opt_type == 'AG') 
@@ -109,7 +110,7 @@
         Am_max = 5;
         Theta_m_min = 45;
         Theta_m_max = 72;
-        L = 4;
+        L = 12;
         
         % o vetor parametros dá os valores das MF's:
         if (FT1type == 'L')
@@ -126,11 +127,11 @@
     end
     
     if (FuzzyType == 'T2'),
-        Am_min = 1;
+        Am_min = 2;
         Am_max = 5;
         Theta_m_min = 35;
         Theta_m_max = 72;
-        L = 2;
+        L = 12;
         
         % o vetor parametros dá os valores das MF's:        
         if (FT2Itype == 'L')

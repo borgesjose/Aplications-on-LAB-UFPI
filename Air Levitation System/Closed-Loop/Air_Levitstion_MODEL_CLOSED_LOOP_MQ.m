@@ -28,13 +28,9 @@ b2 = 0.274777441417530
 
 for t=5:npts,
     
-    
-    
     yest(t) = -a1*yest(t-3)-a2*yest(t-4)+b1*u(t-3)+b2*u(t-4);
     erro(t)= ref(t) - yest(t);
     u(t) = erro(t);
-    
-    
     
 end;
 
@@ -43,7 +39,7 @@ hold on;
 %plot(u, 'r');
 folderName = 'model-closed-loop';
 
-%%
+%%]
 err = yest
 plot(err, 'r');
 
