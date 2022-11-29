@@ -122,7 +122,7 @@ teste_servidor()
 Ts = 0.06
 alturas = [] # VARIÁVEL DE SAÍDA (y)
 controle = [0] # VARIÁVEL DE CONTROLE (u)
-amostras = 500
+amostras = 1000
 # tempo = []
 erro = [0,0]
 
@@ -138,14 +138,15 @@ b2 = 0.274777441417530
 # amostras = int(input("Defina a quantidade de amostras: "))
 # valor_altura = input("Defina o valor de altura em milímetros: ")
 
-eps=1;
+eps=10;
 #eps=10;
-dh=80;
-dl=50;
+dh=60;
+dl=47;
 
 for amostra in range(amostras):
-    ref   = 50 
+    ref   = 500
 
+valor_altura_float = ref
 # set_pwm(pwm, "80")
 # time.sleep(1)
 
@@ -165,12 +166,16 @@ for amostra in range(amostras):
  
     
     # MALHA FECHADA
-    erro.append((valor_altura_float[k] - alturas[-1])/10)
+    erro.append((valor_altura_float - alturas[-1])/10)
 
-   if ((abs(erro[-1]) >= eps) and (erro[-1]  >0)):      controle.append(dh); 
-   if ((abs(erro[-1]) > eps) and (erro[-1] < 0)):       ucontrole.append(dl; 
-   if ((abs(erro[-1]) < eps) and (controle[-2] == dh)):       controle.append(dh); 
-   if ((abs(erro[-1]) < eps) and (controle[-2] == dl)):       controle.append(dl);   
+    if (abs(erro[-1]) >= eps) and (erro[-1]  >0):
+       controle.append(dh); 
+    if (abs(erro[-1]) > eps) and (erro[-1] < 0):
+        controle.append(dl); 
+    if (abs(erro[-1]) < eps) and (controle[-2] == dh):
+        controle.append(dh); 
+    if (abs(erro[-1]) < eps) and (controle[-2] == dl):
+        controle.append(dl);   
 
 
     # SATURAÇÃO 
@@ -179,7 +184,7 @@ for amostra in range(amostras):
     elif controle[-1] < 47:
         controle[-1] = 47
 
-    set_pwm(pwm, u[-1])
+    set_pwm(pwm, controle[-1])
         
     # tempo.append(amostra*Ts)
     # time.sleep(Ts - (time.time() - tempo_inicio_amostra)) # Atraso adaptativo?
@@ -203,7 +208,7 @@ pos_medicao(desligar)
 # PLOTAGEM
 plt.plot(list(range(amostras)), [valor_altura_float]*amostras, 'b')
 plt.plot(list(range(amostras)), alturas, 'r')
-# plt.plot(tempo, alturas)
+plt.plot(list(range(amostras)), controle, 'g')
 plt.ylabel('Altura do objeto (mm)')
 plt.xlabel('Número da amostra')
 # plt.xlabel('Tempo')

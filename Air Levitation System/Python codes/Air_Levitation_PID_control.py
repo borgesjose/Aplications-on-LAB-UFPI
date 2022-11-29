@@ -120,7 +120,7 @@ teste_servidor()
 Ts = 0.06
 alturas = [] # VARIÁVEL DE SAÍDA (y)
 controle = [0] # VARIÁVEL DE CONTROLE (u)
-amostras = 500
+amostras = 1000
 # tempo = []
 erro = [0,0]
 rate = [0,0]
@@ -138,20 +138,19 @@ Kp = [0,0];
 Kd = [0,0];
 Ki = [0,0];
 
+Kc = 0.04028;
+Ti = 1.969;
+Td = 0.49225;
+            
 #Kc = 0.04028;
 #Ti = 1.969;
 #Td = 0.49225;
-            
-Kc = 0.06;
-Ti =  3;
-Td = 0.75;
-
 
 # amostras = int(input("Defina a quantidade de amostras: "))
 # valor_altura = input("Defina o valor de altura em milímetros: ")
 
-patamar = 50
-passo = 20
+patamar = 500
+passo = 0
 ref = []
 for amostra in range(amostras):
     if amostra<=amostras/4:
@@ -236,13 +235,14 @@ pos_medicao(desligar)
 # set_pwm(pwm, "0")
 
 # PLOTAGEM
-plt.plot(list(range(amostras)), [valor_altura_float]*amostras, 'b')
-plt.plot(list(range(amostras)), alturas, 'r')
-# plt.plot(tempo, alturas)
+#plt.plot(list(range(amostras)), valor_altura_float, 'b')
+#plt.plot(list(range(amostras)), alturas, 'r')
+plt.plot( alturas)
+plt.plot(ref)
 plt.ylabel('Altura do objeto (mm)')
 plt.xlabel('Número da amostra')
 # plt.xlabel('Tempo')
-plt.title("Altura desejada: " + str(valor_altura_float) + "mm")
+plt.title("Altura desejada: " + str(valor_altura_float[-1]) + "mm")
 plt.show()
 
 plt.plot(list(range(amostras)), controle[:-1], 'g')
@@ -250,5 +250,5 @@ plt.plot(list(range(amostras)), controle[:-1], 'g')
 plt.ylabel('Variável de controle')
 plt.xlabel('Número da amostra')
 # plt.xlabel('Tempo')
-plt.title("Controle - Altura desejada: " + str(valor_altura_float) + "mm")
+plt.title("Controle - Altura desejada: " + str(valor_altura_float[-1]) + "mm")
 plt.show()
