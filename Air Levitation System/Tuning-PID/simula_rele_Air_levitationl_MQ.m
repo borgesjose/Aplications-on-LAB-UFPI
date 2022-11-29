@@ -40,7 +40,11 @@ for t = 3:nptos,
    if ((abs(e(t)) > eps) & (e(t) < 0))      u(t) = -d; end;
    if ((abs(e(t)) < eps) & (u(t-1) == d))   u(t) =  d; end;
    if ((abs(e(t)) < eps) & (u(t-1) == -d))  u(t) = -d; end;
+   
    tempo(t) = t*Tamostra;
+   
+   
+   
 end;
 %%
 % --- Calcula período

@@ -15,6 +15,8 @@ from IPython import get_ipython
 import requests
 import time
 import matplotlib.pyplot as plt
+import math as mt
+
 
 
 # Limpa o console e apaga todas as variáveis presentes:
@@ -138,8 +140,8 @@ b2 = 0.274777441417530
 
 eps=1;
 #eps=10;
-dh=60;
-dl=5;
+dh=80;
+dl=50;
 
 for amostra in range(amostras):
     ref   = 50 
@@ -165,11 +167,10 @@ for amostra in range(amostras):
     # MALHA FECHADA
     erro.append((valor_altura_float[k] - alturas[-1])/10)
 
-   if ((abs(e(k)) >= eps) and (e(k)  >0))      u(k) =  dh; end;
-   if ((abs(e(k)) > eps) and (e(k) < 0))      u(k) = dl; end;
-   if ((abs(e(k)) < eps) and (u(k-1) == dh))   u(k) =  dh; end;
-   if ((abs(e(k)) < eps) and (u(k-1) == dl))  u(k) = dl; end;  
-
+   if ((abs(erro[-1]) >= eps) and (erro[-1]  >0)):      controle.append(dh); 
+   if ((abs(erro[-1]) > eps) and (erro[-1] < 0)):       ucontrole.append(dl; 
+   if ((abs(erro[-1]) < eps) and (controle[-2] == dh)):       controle.append(dh); 
+   if ((abs(erro[-1]) < eps) and (controle[-2] == dl)):       controle.append(dl);   
 
 
     # SATURAÇÃO 

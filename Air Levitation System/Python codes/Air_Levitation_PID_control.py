@@ -125,6 +125,7 @@ amostras = 500
 erro = [0,0]
 rate = [0,0]
 
+
 # x = []
 
 a1 = -0.955255265000912
@@ -137,9 +138,13 @@ Kp = [0,0];
 Kd = [0,0];
 Ki = [0,0];
 
-Kc = 0.04028;
-Ti = 1.969;
-Td = 0.49225;
+#Kc = 0.04028;
+#Ti = 1.969;
+#Td = 0.49225;
+            
+Kc = 0.06;
+Ti =  3;
+Td = 0.75;
 
 
 # amostras = int(input("Defina a quantidade de amostras: "))
