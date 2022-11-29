@@ -156,9 +156,9 @@ for amostra in range(amostras):
         ref.append(patamar + passo)
     if amostra>3*amostras/4:
         ref.append(patamar + passo)
-
-
 valor_altura_float = [float(i) for i in ref]
+
+
 
 
 # set_pwm(pwm, "80")
