@@ -9,8 +9,8 @@
 %  -- Version: 1.0  - 25/09/2022                      %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-dados = 'fig'
-npts = 799;
+dados = 'dat'
+npts = 790;
 if (dados == 'dat')
     %% CARREGAR .DAT
     load y.dat
