@@ -138,29 +138,33 @@ Kp = [0,0];
 Kd = [0,0];
 Ki = [0,0];
 
-Kc = 0.04028;
-Ti = 1.969;
-Td = 0.49225;
-            
+#Ziegle Nichols:
 #Kc = 0.04028;
 #Ti = 1.969;
 #Td = 0.49225;
+
+#Astrom:        
+Kc =  0.25;
+Ti = 2.1008;
+Td = 0.52521;
+
+
 
 # amostras = int(input("Defina a quantidade de amostras: "))
 # valor_altura = input("Defina o valor de altura em milímetros: ")
 
 patamar = 500
-passo = 0
+passo = 100
 ref = []
 for amostra in range(amostras):
     if amostra<=amostras/4:
         ref.append(patamar)
     if amostra>amostras/4:
-        ref.append(patamar) 
+        ref.append(patamar + passo) 
     if amostra>amostras/2 and amostra<=3*amostras/4:
-        ref.append(patamar + passo)
+        ref.append(patamar + 2*passo)
     if amostra>3*amostras/4:
-        ref.append(patamar + passo)
+        ref.append(patamar + 3*passo) 
 
 #Senoidal
 
@@ -232,7 +236,7 @@ print(f"--- Média: {total/amostras} segundos/amostra")
 print("===============================================\n")
 pos_medicao(desligar)
 
-# set_pwm(pwm, "0")
+set_pwm(pwm, "0")
 
 # PLOTAGEM
 #plt.plot(list(range(amostras)), valor_altura_float, 'b')
