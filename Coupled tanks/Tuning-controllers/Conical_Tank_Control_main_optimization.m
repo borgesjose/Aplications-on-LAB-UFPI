@@ -19,10 +19,10 @@
        
         Tsim = 500; % Total simulation time
         
-        PIDtype = 'ZN'; %'ZN' = Ziegle-Nichols , 'CC' = Choen Coon,'AT' = Astrom, 'PR' = Teacher tunning;
-        PIDflag = 1;
+        PIDtype = 'CC'; %'ZN' = Ziegle-Nichols , 'CC' = Choen Coon,'AT' = Astrom, 'PR' = Teacher tunning;
+        PIDflag = 0;
         FuzzyType = 'T1';% 'T1' = Tipo 1, 'T2' = Tipo 2;
-        FT1type = 'L'; % L = input linear ; N = input non linear
+        FT1type = 'N'; % L = input linear ; N = input non linear
         FT2Itype = 'N'; % L = input linear ; N = input non linear
         N_membership_functions = '3';
         
@@ -54,7 +54,13 @@
         %% Step 3 - Controller definition: 
 
         [Kc,Ti,Td] = PID(PIDtype); % Type PID selection 
-
+        
+        Am_min = 1;        
+        Am_max = 7;
+        Theta_m_min = 45;
+        Theta_m_max = 72;
+        L = 20;
+        
         %% Step 6, Definições de otimização:
        
         % PSO
@@ -74,20 +80,19 @@
         
        % AG
        
-            ag.prob_mutation = 0.10;%rand(1);+
-            
-            ag.prob_crossover = 0.9;%rand(1);
-            ag.geracoes = 50;
+            ag.prob_mutation = 0.2;%rand(1);           
+            ag.prob_crossover = 0.8;%rand(1);
+            ag.geracoes = 100;
 
-            ag.populacao_size = 128; %defino o tamanho da população
-            ag.N_mais_aptos = 32;
+            ag.populacao_size = 256; %defino o tamanho da população
+            ag.N_mais_aptos = 64;
 
             ag.objfunction = @objfunc;
             
             ag.visFlag = 1;
             ag.folder = folderName;
    
-            L = 12;
+            
         %% Step 7, Otimização:
         
         if(Opt_type == 'AG') 
@@ -99,11 +104,7 @@
         
         
 %% Step 4  - Controller definition:        
-        Am_min = 1;        
-        Am_max = 6;
-        Theta_m_min = 45;
-        Theta_m_max = 72;
-        L = 5;
+        
     if (PIDflag)
         disp('lol')
     else

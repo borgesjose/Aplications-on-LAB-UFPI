@@ -1,10 +1,10 @@
         Tsim = 1500; % Total simulation time
-        PIDtype = 'ZN'; %'ZN' = Ziegle-Nichols , 'CC' = Choen Coon,'AT' = Astrom, 'PR' = Teacher tunning;
+        PIDtype = 'CC'; %'ZN' = Ziegle-Nichols , 'CC' = Choen Coon,'AT' = Astrom, 'PR' = Teacher tunning;
         PIDflag = 0;
         %% Step 2 - Problem definition:
         load teta.dat
         a1=teta(1);a2=teta(2);b1=teta(3);b2=teta(4);
-        L=2;
+ 
         %% Step 3 - Controller definition: 
 
         [Kc,Ti,Td] = PID(PIDtype); % Type PID selection 
@@ -31,11 +31,11 @@
         erro(1)=1 ; erro(2)=1 ; erro(3)=1; erro(4)=1;
 
 
-        Am_min = 2;
-        Am_max = 5;
+        Am_min = 1;
+        Am_max = 7;
         Theta_m_min = 45;
         Theta_m_max = 72;
-        L = 2;        
+        
 
 
 if (FuzzyType == 'T1'),

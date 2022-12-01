@@ -8,9 +8,9 @@ function [Kc,Ti,Td] = PID(Ctype),
         end;
         
         if (Ctype == 'CC')
-            Kc = .0001;
-            Ti = 0.2;
-            Td = 0.079;            
+            Kc = 0.005;
+            Ti = 0.50;
+            Td = 0.090;            
         end;
         
         if (Ctype == 'AT')
