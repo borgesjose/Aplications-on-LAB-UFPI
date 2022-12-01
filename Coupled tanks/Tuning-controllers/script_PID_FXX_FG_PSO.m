@@ -32,7 +32,7 @@
 
 
         Am_min = 1;
-        Am_max = 7;
+        Am_max = 18;
         Theta_m_min = 45;
         Theta_m_max = 72;
         

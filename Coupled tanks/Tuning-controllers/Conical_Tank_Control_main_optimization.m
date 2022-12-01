@@ -17,7 +17,7 @@
         format shortg;
         data_horario_test = datestr(clock,'yyyy-mm-dd THH-MM-SS');
        
-        Tsim = 500; % Total simulation time
+        Tsim = 1000; % Total simulation time
         
         PIDtype = 'CC'; %'ZN' = Ziegle-Nichols , 'CC' = Choen Coon,'AT' = Astrom, 'PR' = Teacher tunning;
         PIDflag = 0;
@@ -33,7 +33,7 @@
     
         flag_model_severance = 0;
         
-        Opt_type = 'NO'; % AG = Genetic Algorithm ; PS = Particle Swarm ; NO = No optimization
+        Opt_type = 'PS'; % AG = Genetic Algorithm ; PS = Particle Swarm ; NO = No optimization
         
         folderName = ['round-2', '-', FuzzyType,'-',Opt_type,'-',data_horario_test];
 
@@ -56,10 +56,10 @@
         [Kc,Ti,Td] = PID(PIDtype); % Type PID selection 
         
         Am_min = 1;        
-        Am_max = 7;
+        Am_max = 18;
         Theta_m_min = 45;
         Theta_m_max = 72;
-        L = 20;
+        L = 1;
         
         %% Step 6, Definições de otimização:
        
