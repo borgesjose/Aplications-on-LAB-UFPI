@@ -1,5 +1,5 @@
         Tsim = 1500; % Total simulation time
-        PIDtype = 'CC'; %'ZN' = Ziegle-Nichols , 'CC' = Choen Coon,'AT' = Astrom, 'PR' = Teacher tunning;
+        PIDtype = 'AT'; %'ZN' = Ziegle-Nichols , 'CC' = Choen Coon,'AT' = Astrom, 'PR' = Teacher tunning;
         PIDflag = 0;
         %% Step 2 - Problem definition:
         load teta.dat
@@ -20,7 +20,7 @@
         
         %ref_type = 'st'; % st = step ; us = upper stair ; ls = lower stair;
         patamar = 1;
-        passo = 0.10;
+        passo = 0.00;
         Tamostra = Ts;
     
         ref = ref_def(patamar,passo,nptos);
@@ -32,7 +32,7 @@
 
 
         Am_min = 1;
-        Am_max = 18;
+        Am_max = 20;
         Theta_m_min = 45;
         Theta_m_max = 72;
         
@@ -74,7 +74,7 @@ if (FuzzyType == 'T1'),
         for i=5:nptos
             
             
-            h(i) = -a1*h(i-3)-a2*h(i-4)+b1*u(i-3)+b2*u(i-4);
+            h(i) = -a1*h(i-1)-a2*h(i-2)+b1*u(i-3)+b2*u(i-4);
             
             
            erro(i)=ref(i) - h(i);

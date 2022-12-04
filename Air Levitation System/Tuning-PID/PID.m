@@ -14,9 +14,9 @@ function [Kc,Ti,Td] = PID(Ctype),
         end;
         
         if (Ctype == 'AT')
-            Kc = 0.04028;
-            Ti = 1.969;
-            Td = 0.49225;            
+            Kc =  0.25;
+            Ti = 2.1008;
+            Td = 0.52521;           
             
         end;   
         

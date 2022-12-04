@@ -1,0 +1,95 @@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+% Universidade Federal do Piauí                      %
+% Campus Ministro Petronio Portela                    %
+% Copyright 2022 -José Borges do Carmo Neto-         %
+% @author José Borges do Carmo Neto                  %
+% @email jose.borges90@hotmail.com                    %
+% cilindrical tank relay PID tuning                   %
+%                                                     %
+%  -- Version: 1.0  - 18/09/2022                      %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+load 'y.dat'
+load 'u.dat'
+load 'Tempo.dat'
+load 'ref.dat'
+load 'e.dat'
+%load 'Tempo.dat'
+load 'dl.dat'
+load 'dh.dat'
+load 'eps.dat'
+
+%%
+
+ep = eps
+
+Qde_amostras = size(u,2)
+%%
+
+
+  maxi=max(y);
+  mini=0.45;%min(y);
+  d=(dh-dl)/2
+  a=(maxi-mini)/2
+  img=((pi*ep)/(4*d))
+  real=((-pi)/(4*d))*sqrt((a^2)-(ep^2))
+  g=real-j*img
+
+kont = 0;
+for t = 4:Qde_amostras,
+   if u(t) ~= u(t-1)
+      kont = kont + 1;
+      ch(kont) = t;
+   end
+end
+Tu1 = (ch(3) - ch(2))*Tamostra
+Tu2 = (ch(4) - ch(3))*Tamostra
+Tu = Tu1 + Tu2
+omega = (2*pi)/(Tu)
+
+% --- Calcula valor de pico positivo
+amp_max = eps;
+for t =1:Qde_amostras,
+   if y(t) >= amp_max  amp_max = y(t); end;
+end;
+
+%********Sintonia de Controladores PID Método do Astrom (Ziegler-Nichols
+%                                                             Modificado)
+P=0;
+I=0;
+D=0;
+
+  %******************Calculo ganho e fase do processo*******
+gwr=-(pi*sqrt(a^2-eps^2))/(4*d)
+gwi=-(pi*eps)/(4*d)
+ra=abs(gwr-j*gwi);
+fia=atan(eps/sqrt(a^2-eps^2));
+
+%*********Especificações do ganho e da fase *************
+fib=30;
+rb=ra*0.25;
+fib=pi*fib;
+
+%*************Cálculo dos Parâmetros do Controlador***********
+Kc=rb*cos(fib-fia)/ra
+aux1=tan(fib-fia);
+aux2=sqrt(1+aux1^2);
+aux3=aux1+aux2;
+Ti=aux3/(2*omega*0.25)
+Td=0.25*Ti
+P=Kc
+I=Kc/Ti
+D=Kc*Td
+
+%clf(figure(2));
+%figure(2);
+hold on
+plot(u,'b'); %Gera o gráfico Tempo x Saída
+plot(y,'r'); %Gera o gráfico Tempo x Saída
+%plot(u,'b'); %Gera o gráfico Tempo x Saída
+hold off;
+saidas=[Tempo; u; y]';
+% axis([0 Qde_amostras*Ts 0 inf])
+%save -ascii ReleHisterese4.dat saidas;

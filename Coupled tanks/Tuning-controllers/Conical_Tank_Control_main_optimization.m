@@ -14,16 +14,18 @@
 
 %% Step 1, simulation definition:
         %clear;clc;
+        global PIDtype PIDflag FuzzyType FT1type FT2Itype
+        
         format shortg;
         data_horario_test = datestr(clock,'yyyy-mm-dd THH-MM-SS');
        
         Tsim = 1000; % Total simulation time
         
-        PIDtype = 'CC'; %'ZN' = Ziegle-Nichols , 'CC' = Choen Coon,'AT' = Astrom, 'PR' = Teacher tunning;
+        PIDtype = 'AT'; %'ZN' = Ziegle-Nichols , 'CC' = Choen Coon,'AT' = Astrom, 'PR' = Teacher tunning;
         PIDflag = 0;
         FuzzyType = 'T1';% 'T1' = Tipo 1, 'T2' = Tipo 2;
         FT1type = 'L'; % L = input linear ; N = input non linear
-        FT2Itype = 'N'; % L = input linear ; N = input non linear
+        FT2Itype = 'L'; % L = input linear ; N = input non linear
         N_membership_functions = '3';
         
         flag_load_dist = 0; 
@@ -33,14 +35,17 @@
     
         flag_model_severance = 0;
         
-        Opt_type = 'PS'; % AG = Genetic Algorithm ; PS = Particle Swarm ; NO = No optimization
+        
+        Opt_type = 'NO'; % AG = Genetic Algorithm ; PS = Particle Swarm ; NO = No optimization
         
         folderName = ['round-2', '-', FuzzyType,'-',Opt_type,'-',data_horario_test];
 
         
 %%        
-        if(PIDflag) simName = 'PID';
-        else simName = FuzzyType;
+        if(PIDflag) 
+            simName = 'PID';
+            Opt_type = 'NO';
+        else simName = FuzzyType; 
         end;
         
         if(flag_load_dist) simName = 'Load_disturbace'; end;
@@ -56,20 +61,20 @@
         [Kc,Ti,Td] = PID(PIDtype); % Type PID selection 
         
         Am_min = 1;        
-        Am_max = 18;
-        Theta_m_min = 45;
-        Theta_m_max = 72;
-        L = 1;
+        Am_max = 20;
+        Theta_m_min = 30;
+        Theta_m_max = 60;
+        L = 4;
         
         %% Step 6, Definições de otimização:
        
         % PSO
-            pso.noP = 128;
-            pso.maxIter = 100;
-            pso.wMax = 0.9;
-            pso.wMin= 0.2;
-            pso.c1= 2;
-            pso.c2= 2;
+            pso.noP = 16;
+            pso.maxIter = 20;
+            pso.wMax = 2.0;
+            pso.wMin= 1.0;
+            pso.c1= 1;
+            pso.c2= 1;
 
             pso.folder = folderName
             pso.visFlag = 1;
@@ -169,7 +174,7 @@
         ref_type = 'st'; % st = step ; us = upper stair ; ls = lower stair;
 
         patamar = 1.00;
-        passo = 0.0;
+        passo = 0.20;
         
         Tamostra = Ts;
     
@@ -186,7 +191,7 @@
 
         for i=5:nptos
             
-                h(i) = -a1*h(i-3)-a2*h(i-4)+b1*u(i-3)+b2*u(i-4);
+                h(i) = -a1*h(i-1)-a2*h(i-2)+b1*u(i-1)+b2*u(i-2);
   
 
                 erro(i)= ref(i) - h(i);

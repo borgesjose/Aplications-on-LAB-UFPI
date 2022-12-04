@@ -14,21 +14,21 @@ clear(varlist{:})
 clf(figure(1))
 
 format shortg;
-data_horario_test = datestr(clock,'yyyy-mm-dd THH-MM-SS');
+subfolderName = datestr(clock,'yyyy-mm-dd THH-MM-SS');
 folderName = 'siso_control_cilindrical_tank';
 
 Ts = 1;  %Determinação do período de amostragem
 
 freq = 3000; %Frequencia de atuação da bomba
 
-Qde_amostras =800; %Quantidade de amostras do gráfico
+Qde_amostras =200; %Quantidade de amostras do gráfico
 npts = Qde_amostras;
 
 %Flags
 
 PIDflag = 0;
 h_flag = 0;
-PIDtype = 'ZN';
+PIDtype = 'AT';
 
 %% PID definition: 
 
@@ -42,8 +42,8 @@ PIDtype = 'ZN';
         
         ref_type = 'st'; % st = step ; us = upper stair ; ls = lower stair;
     
-        patamar = 1;
-        passo = 0.20;
+        patamar = 1.5;
+        passo = 0.00;
         ref = ref_def(patamar,passo,npts) % Gerar degraus;   
                 
         y(1)=0 ; y(2)=0 ; y(3)=0; y(4)=0;
