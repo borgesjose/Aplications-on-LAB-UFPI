@@ -61,7 +61,7 @@
         [Kc,Ti,Td] = PID(PIDtype); % Type PID selection 
         
         Am_min = 1;        
-        Am_max = 20;
+        Am_max = 5;
         Theta_m_min = 30;
         Theta_m_max = 60;
         L = 4;
