@@ -170,6 +170,19 @@ valor_altura_float = [float(i) for i in ref]
 pre_medicao(ligar)
 tempo_inicio_laco = time.time()
 k=0;
+
+
+Am_min = 1;        
+Am_max = 3;
+Theta_m_min = 30;
+Theta_m_max = 60;
+L = 2
+param =  [-L,0,-L,0,L,0,L,-L,0,-L,0,L,0,L]; # Para MF lineares
+
+
+
+
+
 # LAÇO DE AQUISIÇÃO:
 for amostra in range(amostras):
     # plt.pause(0.01)
@@ -183,7 +196,7 @@ for amostra in range(amostras):
     erro.append((valor_altura_float - alturas[-1])/10)
 
    # Controlador:
-    Ami = 1;
+    Ami = gain_margin_t1(erro,rate,L,param,Itype);
     Kp.append(Kc/Ami);
     Kd.append((Td)*Kc/Ami)
     Ki.append((Kc/Ami)/(Ti))
