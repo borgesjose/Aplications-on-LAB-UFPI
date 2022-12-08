@@ -154,7 +154,7 @@ Td = 0.52521;
 # valor_altura = input("Defina o valor de altura em milímetros: ")
 
 patamar = 500
-passo = 100
+passo = 000
 ref = []
 for amostra in range(amostras):
     if amostra<=amostras/4:

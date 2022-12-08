@@ -16,6 +16,7 @@ import requests
 import time
 import matplotlib.pyplot as plt
 
+from FT1_AT_PID_FG import *
 
 # Limpa o console e apaga todas as variáveis presentes:
 try:
@@ -144,8 +145,8 @@ Td = 0.49225;
 
 # amostras = int(input("Defina a quantidade de amostras: "))
 # valor_altura = input("Defina o valor de altura em milímetros: ")
-patamar = 50
-passo = 20
+patamar = 500
+passo = 200
 ref = []
 for amostra in range(amostras):
     if amostra<=amostras/4:
@@ -156,6 +157,7 @@ for amostra in range(amostras):
         ref.append(patamar + passo)
     if amostra>3*amostras/4:
         ref.append(patamar + passo)
+
 valor_altura_float = [float(i) for i in ref]
 
 
@@ -171,18 +173,18 @@ pre_medicao(ligar)
 tempo_inicio_laco = time.time()
 k=0;
 
-
+Am = []
 Am_min = 1;        
-Am_max = 3;
+Am_max = 5;
 Theta_m_min = 30;
 Theta_m_max = 60;
-L = 2
+L = 1
 param =  [-L,0,-L,0,L,0,L,-L,0,-L,0,L,0,L]; # Para MF lineares
+FT1type = 'L';
 
 
 
-
-
+k=0
 # LAÇO DE AQUISIÇÃO:
 for amostra in range(amostras):
     # plt.pause(0.01)
@@ -193,10 +195,15 @@ for amostra in range(amostras):
  
     
     # MALHA FECHADA
-    erro.append((valor_altura_float - alturas[-1])/10)
+    erro.append((valor_altura_float[k] - alturas[-1])/10)
+    
 
    # Controlador:
-    Ami = gain_margin_t1(erro,rate,L,param,Itype);
+       
+    Am.append(gain_margin_t1(erro[-1],rate[-1],L,param,FT1type));
+    
+    Ami = Am[-1]*Am_max + Am_min*(1 - Am[-1]);
+    
     Kp.append(Kc/Ami);
     Kd.append((Td)*Kc/Ami)
     Ki.append((Kc/Ami)/(Ti))
@@ -238,13 +245,14 @@ pos_medicao(desligar)
 # set_pwm(pwm, "0")
 
 # PLOTAGEM
-plt.plot(list(range(amostras)), [valor_altura_float]*amostras, 'b')
-plt.plot(list(range(amostras)), alturas, 'r')
-# plt.plot(tempo, alturas)
+#plt.plot(list(range(amostras)), valor_altura_float, 'b')
+#plt.plot(list(range(amostras)), alturas, 'r')
+plt.plot( alturas)
+plt.plot(ref)
 plt.ylabel('Altura do objeto (mm)')
 plt.xlabel('Número da amostra')
 # plt.xlabel('Tempo')
-plt.title("Altura desejada: " + str(valor_altura_float) + "mm")
+plt.title("Altura desejada: " + str(valor_altura_float[-1]) + "mm")
 plt.show()
 
 plt.plot(list(range(amostras)), controle[:-1], 'g')
@@ -252,5 +260,5 @@ plt.plot(list(range(amostras)), controle[:-1], 'g')
 plt.ylabel('Variável de controle')
 plt.xlabel('Número da amostra')
 # plt.xlabel('Tempo')
-plt.title("Controle - Altura desejada: " + str(valor_altura_float) + "mm")
+plt.title("Controle - Altura desejada: " + str(valor_altura_float[-1]) + "mm")
 plt.show()

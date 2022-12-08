@@ -45,8 +45,9 @@ FT2Itype = 'L'; % L = input linear ; N = input non linear
 
 %% PID definition: 
 
-[Kc,Ti,Td] = PID(PIDtype); % Type PID selection
-
+%[Kc,Ti,Td] = PID(PIDtype); % Type PID selection
+load pid.dat
+[Kc,Td ,Ti] = pid
 %%
 if (PIDflag)
     subfolderName = ['PID -',PIDtype,'-',data_horario_test];

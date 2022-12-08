@@ -1,5 +1,5 @@
- # ================================================================================== #
-# title           :Air_Levitation_PID_control.py                                     #
+# ================================================================================== #
+# title           :Air_Levitation_FT2I_PID_control.py                                     #
 # description     :Script  PID Air Levitation control                                #
 # author          :José Borges                                                       #
 # date            :20220105                                                          #
@@ -16,6 +16,7 @@ import requests
 import time
 import matplotlib.pyplot as plt
 
+from FT2_AT_PID_FG import *
 
 # Limpa o console e apaga todas as variáveis presentes:
 try:
@@ -170,6 +171,18 @@ valor_altura_float = [float(i) for i in ref]
 pre_medicao(ligar)
 tempo_inicio_laco = time.time()
 k=0;
+
+
+Am_min = 1;        
+Am_max = 3;
+Theta_m_min = 30;
+Theta_m_max = 60;
+L = 2
+FT2type = 'L';
+
+param = [0.2377,0.0306,-0.2588,0.4572,0.5397,0.2005,0.0634,0.0350,0.4868,0.2303,0.1049,-0.0324,0.0481,0.3489,0.4641,0.2081]
+
+
 # LAÇO DE AQUISIÇÃO:
 for amostra in range(amostras):
     # plt.pause(0.01)
@@ -183,7 +196,7 @@ for amostra in range(amostras):
     erro.append((valor_altura_float - alturas[-1])/10)
 
    # Controlador:
-    Ami = 1;
+    Ami = gain_margin_t1(erro[-1],rate[-1],L,param,Itype);
     Kp.append(Kc/Ami);
     Kd.append((Td)*Kc/Ami)
     Ki.append((Kc/Ami)/(Ti))

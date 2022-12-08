@@ -238,7 +238,7 @@ if ((z<=g)),
    mi2(9)= 0;
 elseif ((z>g) & (z<=h)),
    mi2(9)= (z-g)/(h-g);
-else
+else 
    mi2(9)=1;
 end
    
