@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
 % Universidade Federal do Piauí                      %
 % Campus Ministro Petronio Portela                    %
-% Copyright 2022 -José Borges do Carmo Neto-         %
+% Copyright 2022 -Jose Borges do Carmo Neto-          %
 % @author José Borges do Carmo Neto                  %
 % @email jose.borges90@hotmail.com                    %
 % cilindrical tank Control                            %
@@ -13,18 +13,20 @@ global SerPIC
 
 varlist = {'u','y', 'Tempo'};
 clear(varlist{:})
-clf(figure(1))
+%clf(figure(1))
 
 format shortg;
 data_horario_test = datestr(clock,'yyyy-mm-dd THH-MM-SS');
 folderName = 'siso_control_cilindrical_tank';
 
 Ts = 1;  %Determinação do período de amostragem
+Tamostra = Ts;
 
 freq = 3000; %Frequencia de atuação da bomba
 
-Qde_amostras =800; %Quantidade de amostras do gráfico
+Qde_amostras =200; %Quantidade de amostras do gráfico
 npts = Qde_amostras;
+PIDtype = 'AT'
 
 %Flags
 
@@ -32,41 +34,71 @@ PIDflag = 0;
 h_flag = 0;
 
 
-PIDtype = 'ZN'; %'ZN' = Ziegle-Nichols , 'CC' = Choen Coon,'AT' = Astrom, 'PR' = Teacher tunning;
-
 FuzzyType = 'T2';% 'T1' = Tipo 1, 'T2' = Tipo 2;
 FT1type = 'L'; % L = input linear ; N = input non linear
 FT2Itype = 'L'; % L = input linear ; N = input non linear
 
 %% 
-        patamar = 1;
-        passo = 0.20;
+        patamar = 1.4;
+        passo = 0.00;
         ref = ref_def(patamar,passo,npts) % Gerar degraus;   
-
+        y(1)=0 ; y(2)=0 ; y(3)=0; y(4)=0;
+        u(1)=0.5 ; u(2)=0.5 ; u(3)=0.5; u(4)=0.5;
+        erro(1)=1 ; erro(2)=1 ; erro(3)=1; erro(4)=1;
+         Tamostra = Ts;
 %% PID definition: 
+%             Kc = 0.38768;
+%             Ti =  1.5;
+%             Td = 0.375;
+            
+% Kc = 0.49529;
+% Ti = 1.5;
+% Td = 0.375;
 
+<<<<<<< HEAD
 %[Kc,Ti,Td] = PID(PIDtype); % Type PID selection
 load pid.dat
 [Kc,Td ,Ti] = pid
+=======
+% Kc = 0.015;
+% Ti = 0.50;
+% Td = 0.15;
+
+%  Kc = 0.19736;
+%  Ti = 6.5396;
+%  Td = 6.5396;
+
+% MELHOR
+ Kc = 0.488;
+ Ti = 27.968;
+ Td = 0.51381;
+ 
+%  Kc = 0.3;
+%  Ti = 27.968;
+%  Td = 0.51381;
+
+
+        Am_min = .1;        
+        Am_max = 5;
+        Theta_m_min = 45;
+        Theta_m_max = 72;
+        L = 2;
+>>>>>>> 2a5e6aa11ccb4619aed88a2fd222c30897b876c0
 %%
 if (PIDflag)
     subfolderName = ['PID -',PIDtype,'-',data_horario_test];
 else  
     if (FuzzyType == 'T1'),
         
-        Am_min = 2; 
-        Am_max = 5;
-        Theta_m_min = 45;
-        Theta_m_max = 72;
-        L = 2;
-        
         % o vetor parametros dá os valores das MF's:
         if (FT1type == 'L')
-            param = load('T1_L.dat')
+            %param = load('T1_L.dat')
+            param = [-L,0,-L,0,L,0,L,-L,0,-L,0,L,0,L];
             subfolderName = ['FUZZY -', FuzzyType,'-',FT1type,'-',PIDtype,'-',data_horario_test];
             
         elseif (FT1type == 'N')
-            param = load('T1_N.dat')
+            %param = load('T1_N.dat')
+            param = [-0.070719,-0.049497,-0.024568,-0.021779,-4.3288e-09,0,0,0,0.0061594,0.0067864,1,2] 
             subfolderName = ['FUZZY -', FuzzyType,'-',FT1type,'-',PIDtype,'-',data_horario_test];
             
         end;
@@ -76,15 +108,11 @@ else
     
     if (FuzzyType == 'T2'),
         
-        Am_min = 2;
-        Am_max = 5;
-        Theta_m_min = 45;
-        Theta_m_max = 72;
-        L = 2;
-        
+       
         % o vetor parametros dá os valores das MF's:        
         if (FT2Itype == 'L')
-            param = load('T2_L.dat')
+            %param = load('T2_L.dat')
+            param = [0.2377,0.0306,-0.2588,0.4572,0.5397,0.2005,0.0634,0.0350,0.4868,0.2303,0.1049,-0.0324,0.0481,0.3489,0.4641,0.2081];
             param =[param,1,1];
             subfolderName = [PIDtype, '-', FuzzyType,'-',FT2Itype,'-',PIDtype,'-',data_horario_test];
             
@@ -104,13 +132,14 @@ recebe(2)
 recebe(3)
 
 %zerar PWM
-set_pwm_duty(1,1,freq);
-
+set_pwm_duty(1,.5,freq);
+pause(5);
 %%
 
 
   h = figure(1);  
-  hLine1 = line(nan, nan, 'Color','red');
+  hLine1 = line(nan, nan, 'Color','black');
+  %hLine1 = line(nan, nan);
   title('Resposta ao Degrau Tanque ');
   xlabel('Tempo (s)');
         if (h_flag == 1)
@@ -120,7 +149,7 @@ set_pwm_duty(1,1,freq);
         end
   
 %% 
-     for k=5:nptos
+     for k=5:npts
        
         if (h_flag == 1)
            y(k) = mapfun(recebe(2),0.19,2.389,0,60); %Recebe o valor medido da altura e armazena 
@@ -160,19 +189,17 @@ set_pwm_duty(1,1,freq);
                         beta = -(Kc/Ami)*(1+2*((Td)/Tamostra)-(Tamostra/(2*(Ti))));
                         gama = (Kc/Ami)*(Td)/Tamostra;
 
-                        if (flag_load_dist) 
-                            u(k)= u(k-1) + alpha*erro(k) + beta*erro(k-1) + gama*erro(k-2) + disturbio(k);
-                        else
-                            u(k)= u(k-1) + alpha*erro(k) + beta*erro(k-1) + gama*erro(k-2);
-                        end;
+
+                       u(k)= u(k-1) + alpha*erro(k) + beta*erro(k-1) + gama*erro(k-2);
+                    
         
 
       %saturation:
-          if(u(k)<0.05) u(k)=0.05;end;
-          if(u(k)>0.5) u(k)=0.5;end;
+          if(u(k)<0) u(k)=0;end;
+          if(u(k)>1) u(k)=1;end;
       
       
-      set_pwm_duty(1,u(k),freq);
+      set_pwm_duty(1,1-u(k),freq);
       x1 = get(hLine1, 'XData');  
       y1 = get(hLine1, 'YData');  
       x1 = [x1 k*Ts];  
@@ -183,12 +210,14 @@ set_pwm_duty(1,1,freq);
       pause(Ts);
      end
   
- %zerar bomba
+ %zerar bombau
  set_pwm_duty(1,1,freq); 
  
 %Plotar sinal de controle 
 hold on
 plot(Tempo,u,'b');
+plot(Tempo,u);
+plot(Tempo,ref,'g');
 hold off; 
 
 % Salvar dados:
