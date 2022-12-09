@@ -1,5 +1,5 @@
         Tsim = 1500; % Total simulation time
-        PIDtype = 'AT'; %'ZN' = Ziegle-Nichols , 'CC' = Choen Coon,'AT' = Astrom, 'PR' = Teacher tunning;
+        PIDtype = 'FG'; %'ZN' = Ziegle-Nichols , 'CC' = Choen Coon,'AT' = Astrom, 'PR' = Teacher tunning;
         PIDflag = 0;
         %% Step 2 - Problem definition:
         load teta.dat
@@ -31,10 +31,11 @@
         erro(1)=1 ; erro(2)=1 ; erro(3)=1; erro(4)=1;
 
 
-        Am_min = 1;
-        Am_max = 20;
-        Theta_m_min = 45;
-        Theta_m_max = 72;
+        Am_min = .5;        
+        Am_max = 1.5;
+        Theta_m_min = 30;
+        Theta_m_max = 60;
+        L = 1;
         
 
 

@@ -83,7 +83,7 @@ load pid.dat
         Theta_m_min = 45;
         Theta_m_max = 72;
         L = 2;
->>>>>>> 2a5e6aa11ccb4619aed88a2fd222c30897b876c0
+
 %%
 if (PIDflag)
     subfolderName = ['PID -',PIDtype,'-',data_horario_test];

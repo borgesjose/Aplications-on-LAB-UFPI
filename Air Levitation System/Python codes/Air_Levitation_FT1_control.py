@@ -233,7 +233,7 @@ for amostra in range(amostras):
     # plt.title("Teste")
     k=k+1;
     
-        
+      
 # PÓS AQUISIÇÃO
 total = time.time() - tempo_inicio_laco
 print("\n===============================================")
@@ -242,7 +242,7 @@ print(f"--- Média: {total/amostras} segundos/amostra")
 print("===============================================\n")
 pos_medicao(desligar)
 
-# set_pwm(pwm, "0")
+set_pwm(pwm, "0")
 
 # PLOTAGEM
 #plt.plot(list(range(amostras)), valor_altura_float, 'b')

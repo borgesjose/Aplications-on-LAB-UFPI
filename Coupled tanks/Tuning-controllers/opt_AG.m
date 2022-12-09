@@ -124,7 +124,7 @@ while convergencia == 0,
     for hh=1:populacao_size %Etapa de avaliação da população para o AG   
         script_PID_FXX_FG; %Chama o script com o controlador implementado
         Mp = max(h);
-        J= 2*Mp + fobj(erro,tempo,'ITAE');
+        J= 2*Mp + fobj(erro,tempo,'IAE');
         populacao{hh,2} = (1/J)*10^4;
     end
     

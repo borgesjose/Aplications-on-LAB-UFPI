@@ -21,11 +21,11 @@
        
         Tsim = 1000; % Total simulation time
         
-        PIDtype = 'AT'; %'ZN' = Ziegle-Nichols , 'CC' = Choen Coon,'AT' = Astrom, 'PR' = Teacher tunning;
+        PIDtype = 'FG'; %'ZN' = Ziegle-Nichols , 'CC' = Choen Coon,'AT' = Astrom, 'PR' = Teacher tunning;
         PIDflag = 0;
-        FuzzyType = 'T1';% 'T1' = Tipo 1, 'T2' = Tipo 2;
+        FuzzyType = 'T2';% 'T1' = Tipo 1, 'T2' = Tipo 2;
         FT1type = 'L'; % L = input linear ; N = input non linear
-        FT2Itype = 'L'; % L = input linear ; N = input non linear
+        FT2Itype = 'N'; % L = input linear ; N = input non linear
         N_membership_functions = '3';
         
         flag_load_dist = 0; 
@@ -36,7 +36,7 @@
         flag_model_severance = 0;
         
         
-        Opt_type = 'NO'; % AG = Genetic Algorithm ; PS = Particle Swarm ; NO = No optimization
+        Opt_type = 'AG'; % AG = Genetic Algorithm ; PS = Particle Swarm ; NO = No optimization
         
         folderName = ['round-2', '-', FuzzyType,'-',Opt_type,'-',data_horario_test];
 
@@ -59,18 +59,12 @@
         %% Step 3 - Controller definition: 
 
         [Kc,Ti,Td] = PID(PIDtype); % Type PID selection 
-        
-        Am_min = 1;        
-        Am_max = 5;
-        Theta_m_min = 30;
-        Theta_m_max = 60;
-        L = 4;
-        
+               
         %% Step 6, Definições de otimização:
        
         % PSO
             pso.noP = 16;
-            pso.maxIter = 20;
+            pso.maxIter = 50;
             pso.wMax = 2.0;
             pso.wMin= 1.0;
             pso.c1= 1;
@@ -90,7 +84,7 @@
             ag.geracoes = 100;
 
             ag.populacao_size = 256; %defino o tamanho da população
-            ag.N_mais_aptos = 64;
+            ag.N_mais_aptos = 32;
 
             ag.objfunction = @objfunc;
             
@@ -100,7 +94,8 @@
             
         %% Step 7, Otimização:
         
-        if(Opt_type == 'AG') 
+        if(Opt_type == 'AG')
+            
             [param] = opt_AG(FuzzyType,FT1type,FT2Itype,L,ag);
         end;
         if(Opt_type == 'PS')         
@@ -115,6 +110,12 @@
     else
         
     if (FuzzyType == 'T1'),
+        
+        Am_min = .5;        
+        Am_max = 1.5;
+        Theta_m_min = 30;
+        Theta_m_max = 60;
+        L = 1;
 
         
         % o vetor parametros dá os valores das MF's:
@@ -132,9 +133,14 @@
     end
     
     if (FuzzyType == 'T2'),
+        
+        Am_min = .5;        
+        Am_max = 1.5;
+        Theta_m_min = 30;
+        Theta_m_max = 60;
+        L = 1;
 
-        
-        
+
         % o vetor parametros dá os valores das MF's:        
         if (FT2Itype == 'L')
             %gene = [0.2377,0.0306,-0.2588,0.4572,0.5397,0.2005,0.0634,0.0350,0.4868,0.2303,0.1049,-0.0324,0.0481,0.3489,0.4641,0.2081];
@@ -174,7 +180,7 @@
         ref_type = 'st'; % st = step ; us = upper stair ; ls = lower stair;
 
         patamar = 1.00;
-        passo = 0.20;
+        passo = 0.00;
         
         Tamostra = Ts;
     
