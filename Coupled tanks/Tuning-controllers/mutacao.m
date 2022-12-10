@@ -17,9 +17,6 @@ function pop =  mutacao(populacao,prob_mutation,FuzzyType,FT1type,FT2Itype,lb,ub
                 mutante(ponto) = mutante(ponto)+(u);
                 %saturation:
                 if(mutante(ponto)<lb) mutante(ponto)=lb(ponto);end;
-                mutante(ponto)
-                lb
-                
                 if(mutante(ponto)>ub) mutante(ponto)=ub(ponto);end;
                 
             end

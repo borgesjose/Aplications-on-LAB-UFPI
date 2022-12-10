@@ -25,7 +25,7 @@
         PIDflag = 0;
         FuzzyType = 'T2';% 'T1' = Tipo 1, 'T2' = Tipo 2;
         FT1type = 'L'; % L = input linear ; N = input non linear
-        FT2Itype = 'N'; % L = input linear ; N = input non linear
+        FT2Itype = 'L'; % L = input linear ; N = input non linear
         N_membership_functions = '3';
         
         flag_load_dist = 0; 
@@ -63,12 +63,12 @@
         %% Step 6, Definições de otimização:
        
         % PSO
-            pso.noP = 16;
+            pso.noP = 32;
             pso.maxIter = 50;
-            pso.wMax = 2.0;
+            pso.wMax = 10.0;
             pso.wMin= 1.0;
-            pso.c1= 1;
-            pso.c2= 1;
+            pso.c1= 3;
+            pso.c2= 2;
 
             pso.folder = folderName
             pso.visFlag = 1;
@@ -93,12 +93,13 @@
    
             
         %% Step 7, Otimização:
-        
+ L = 1;       
         if(Opt_type == 'AG')
             
             [param] = opt_AG(FuzzyType,FT1type,FT2Itype,L,ag);
         end;
-        if(Opt_type == 'PS')         
+        if(Opt_type == 'PS')           
+            
             [param] = opt_PSO(FuzzyType,FT1type,FT2Itype,L,pso);
         end;
         
@@ -143,15 +144,17 @@
 
         % o vetor parametros dá os valores das MF's:        
         if (FT2Itype == 'L')
-            %gene = [0.2377,0.0306,-0.2588,0.4572,0.5397,0.2005,0.0634,0.0350,0.4868,0.2303,0.1049,-0.0324,0.0481,0.3489,0.4641,0.2081];
             
-            %Resultado´para AG:
-            %param = [0.1809,0.3258,0.1362,0.2374,0.0156,0.2217,0.6816,0.0021,0.5516,0.2100,0.0979,0.0679,0.0178,0.2848,1.8989,0.0048]
-            param =[param,1,1];
-            %Resultado para PSO:
             if (Opt_type == 'NO')
-                param = .3*ones(1,16);
+                
+                param = .1*L*ones(1,16);
                 param =[param,1,1];
+                %Resultado para AG:
+                
+                %Resultado para PSO:
+                %param = [-0.113311121838860,-0.107521758753038,-0.104605871337985,-0.102754024989714,-0.0805214132160676,-0.0436803030386978,-0.0267193437416562,-0.0138805744934514,-0.0103315789317721,-0.00973913400180018,-0.00632127346996138,-0.00384262400630347,-0.00311676945623371,0.00719789964352866,0.250000000000000,0.250000000000000,1,1];
+            else
+               param =[param,1,1]; 
             end;
             
             
@@ -159,7 +162,14 @@
             %gene =[0.2146,0.3760,-0.1644,0.4906,0.0376,0.2273,0.2379,-0.0310,0.4428,0.5785,0.3263,0.3500];
             %param=[0.3232,0.4712,0.0218,0.4454,0.5986,0.1102,0.2554,0.0081,0.3159,1.9916,0.9286,0.2525];
             if (Opt_type == 'NO')
-                param = .3*ones(1,12);
+                %param = .3*ones(1,12);
+                %Resultado para AG:
+                
+                %Resultado para PSO:
+                param = [-1,-1,-0.600000000000000,-0.0616060864598206,-0.0304804092769549,-0.00474660025640206,0.0661094618341379,0.150074814391489,0.237263711045850,0.250909564859722,0.442345731120245,0.600000000000000]
+                param =[param,1,1];
+            else
+                param =[param,1,1];
             end;
 
         end;

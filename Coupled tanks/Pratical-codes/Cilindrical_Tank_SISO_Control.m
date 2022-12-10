@@ -24,7 +24,7 @@ Tamostra = Ts;
 
 freq = 3000; %Frequencia de atuação da bomba
 
-Qde_amostras =200; %Quantidade de amostras do gráfico
+Qde_amostras =800; %Quantidade de amostras do gráfico
 npts = Qde_amostras;
 PIDtype = 'AT'
 
@@ -39,8 +39,8 @@ FT1type = 'L'; % L = input linear ; N = input non linear
 FT2Itype = 'L'; % L = input linear ; N = input non linear
 
 %% 
-        patamar = 1.4;
-        passo = 0.00;
+        patamar = 1.0;
+        passo = 0.40;
         ref = ref_def(patamar,passo,npts) % Gerar degraus;   
         y(1)=0 ; y(2)=0 ; y(3)=0; y(4)=0;
         u(1)=0.5 ; u(2)=0.5 ; u(3)=0.5; u(4)=0.5;
@@ -55,11 +55,11 @@ FT2Itype = 'L'; % L = input linear ; N = input non linear
 % Ti = 1.5;
 % Td = 0.375;
 
-<<<<<<< HEAD
+
 %[Kc,Ti,Td] = PID(PIDtype); % Type PID selection
 load pid.dat
 [Kc,Td ,Ti] = pid
-=======
+
 % Kc = 0.015;
 % Ti = 0.50;
 % Td = 0.15;
@@ -117,7 +117,9 @@ else
             subfolderName = [PIDtype, '-', FuzzyType,'-',FT2Itype,'-',PIDtype,'-',data_horario_test];
             
         elseif (FT2Itype == 'N')   
-            param = load('T2_N.dat')
+            %param = load('T2_N.dat')
+            param = [-1,-1,-0.600000000000000,-0.0616060864598206,-0.0304804092769549,-0.00474660025640206,0.0661094618341379,0.150074814391489,0.237263711045850,0.250909564859722,0.442345731120245,0.600000000000000]
+            param =[param,1,1];
             subfolderName = [PIDtype, '-', FuzzyType,'-',FT2Itype,'-',PIDtype,'-',data_horario_test];
 
         end;
@@ -225,9 +227,9 @@ trail = ['./results/',folderName,'/',subfolderName];
 if (~exist(trail)) mkdir(trail);end   
 save([trail, '/y.dat'],'y', '-ascii')
 save ([trail, '/u.dat'], 'u', '-ascii')
-save([trail, '/Tempo.dat'],'y', '-ascii')
-save ([trail, '/ref.dat'], 'u', '-ascii')
-save([trail, '/erro.dat'],'y', '-ascii')
-save ([trail, '/rate.dat'], 'u', '-ascii')
-
-
+save([trail, '/Tempo.dat'],'Tempo', '-ascii')
+save ([trail, '/ref.dat'], 'ref', '-ascii')
+save([trail, '/erro.dat'],'erro', '-ascii')
+save ([trail, '/rate.dat'], 'rate', '-ascii')
+fileName = ['Resluts for PID' ,' - ', PIDtype, ' - ', FuzzyType ,' - ' , FT2Itype, ' - ',ref_type];
+save( [trail,'/',fileName])
