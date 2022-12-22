@@ -24,7 +24,7 @@ Tamostra = Ts;
 
 freq = 3000; %Frequencia de atuação da bomba
 
-Qde_amostras = 800; %Quantidade de amostras do gráfico
+Qde_amostras = 200; %Quantidade de amostras do gráfico
 npts = Qde_amostras;
 PIDtype = 'AT'
 
@@ -40,10 +40,10 @@ FT2Itype = 'L'; % L = input linear ; N = input non linear
 
 %% 
         patamar = 1.0;
-        passo = 0.40;
+        passo = 0.00;
         ref = ref_def(patamar,passo,npts) % Gerar degraus;   
         y(1)=0 ; y(2)=0 ; y(3)=0; y(4)=0;
-        u(1)=0.5 ; u(2)=0.5 ; u(3)=0.5; u(4)=0.5;
+        u(1)=0.67 ; u(2)=0.67 ; u(3)=0.67; u(4)=0.67;
         erro(1)=1 ; erro(2)=1 ; erro(3)=1; erro(4)=1;
          Tamostra = Ts;
 %% PID definition: 
@@ -57,8 +57,8 @@ FT2Itype = 'L'; % L = input linear ; N = input non linear
 
 
 %[Kc,Ti,Td] = PID(PIDtype); % Type PID selection
-load pid.dat
-[Kc,Td ,Ti] = pid
+% load pid.dat
+% [Kc,Td ,Ti] = pid
 
 % Kc = 0.015;
 % Ti = 0.50;
@@ -96,7 +96,7 @@ recebe(2)
 recebe(3)
 
 %zerar PWM
-set_pwm_duty(1,.5,freq);
+set_pwm_duty(1,.43,freq);
 pause(5);
 %%
 
@@ -118,7 +118,11 @@ pause(5);
         if (h_flag == 1)
            y(k) = mapfun(recebe(2),0.19,2.389,0,60); %Recebe o valor medido da altura e armazena 
         else
-           y(k) = recebe(2); %Recebe o valor medido de armazena  
+           for ii=1:10
+           mm(ii) = recebe(2); %Recebe o valor medido de armazena
+           pause(.05)
+           end
+           y(k) = mean(mm)  
         end
         
         erro(k)= ref(k) - y(k);
@@ -172,6 +176,7 @@ plot(Tempo,ref,'g');
 hold off; 
 
 % Salvar dados:
+subfolderName = ['FUZZY - T1 - MINIMUM', '-',data_horario_test];
 trail = ['./results/',folderName,'/',subfolderName];
 if (~exist(trail)) mkdir(trail);end   
 save([trail, '/y.dat'],'y', '-ascii')
@@ -180,5 +185,8 @@ save([trail, '/Tempo.dat'],'Tempo', '-ascii')
 save ([trail, '/ref.dat'], 'ref', '-ascii')
 save([trail, '/erro.dat'],'erro', '-ascii')
 save ([trail, '/rate.dat'], 'rate', '-ascii')
-fileName = ['Resluts for PID' ,' - ', PIDtype, ' - ', FuzzyType ,' - ' , FT2Itype, ' - ',ref_type];
+
+fileName = ['Resluts for FT1 - Minimum' ,' - ', PIDtype, ' - ', FuzzyType ,' - ' , FT2Itype];
 save( [trail,'/',fileName])
+
+
