@@ -138,9 +138,10 @@ Kp = [0,0];
 Kd = [0,0];
 Ki = [0,0];
 
-Kc = 0.04028;
-Ti = 1.969;
-Td = 0.49225;
+
+Kc =  0.05;
+Ti = 2.1008;
+Td = 0.52521;
 
 
 # amostras = int(input("Defina a quantidade de amostras: "))

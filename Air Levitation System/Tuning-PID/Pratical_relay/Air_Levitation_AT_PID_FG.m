@@ -31,14 +31,16 @@ Qde_amostras = size(u,2)
 nptos = Qde_amostras
 t = 1:1:Qde_amostras
 Tempo = Tamostra*t
-
-
+%%
+plot(y)
+hold on
+plot(u)
 %% 3 Identificar os parametros a partir do experimento com relé:
 
     %[gw,w,arm,Kp]=Identificar(n, d, eps,Tamostra,y,u);
     
-  maxi=max(y);
-  mini=min(y);
+  maxi=max(y(nptos/2:end));
+  mini=min(y(nptos/2:end));
   d=(dh-dl)/2
   a=(maxi-mini)/2
   img=((pi*ep)/(4*d))
@@ -76,7 +78,7 @@ gw=-(pi*sqrt(a^2-eps^2))/(4*d)
     Ku = -1/gw;
     %Tu = (2*pi)/w; 
 
-    L = .5;
+    L = 1;
    
     c = 1/Kp;
     b = sin(w*L)/(w*Ku);
@@ -93,7 +95,7 @@ b2 = 0.274777441417530
 %     Theta_m_min = 45;
 %     Theta_m_max = 72;
 %% Sintonizanodo o PID:
-    Am = 60;
+    Am = 3;
     Theta_m = (180/2)*(1-(1/Am));
     
     K = (pi/(2*Am*L))*[b;c;a];

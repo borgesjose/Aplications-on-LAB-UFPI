@@ -1,4 +1,4 @@
-t = 1:1:Qde_amostras
+
 %%
 Tamostra = 0.06
  dh = 60;
@@ -12,7 +12,7 @@ y = [26, 31, 31, 26, 26, 35, 35, 42, 35, 31, 38, 81, 104, 168, 186, 196, 212, 23
 Tempo = Tamostra*t
 
 Qde_amostras = size(u,2)
-
+t = 1:1:Qde_amostras
 %%
 
 
@@ -73,8 +73,8 @@ D=Kc*Td
 %clf(figure(2));
 %figure(2);
 hold on
-plot(Tempo,u,'b'); %Gera o gráfico Tempo x Saída
+plot(u,'b'); %Gera o gráfico Tempo x Saída
 hold off;
-saidas=[Tempo; u; y]';
+%saidas=[t; u; y]';
 % axis([0 Qde_amostras*Ts 0 inf])
 %save -ascii ReleHisterese4.dat saidas;

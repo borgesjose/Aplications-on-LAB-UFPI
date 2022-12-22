@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Dec 21 13:17:37 2022
+
+@author: netlu
+"""
+
 # ================================================================================== #
 # title           :Air_Levitation_PID_control.py                                     #
 # description     :Script  PID Air Levitation control                                #
@@ -15,6 +22,8 @@ from IPython import get_ipython
 import requests
 import time
 import matplotlib.pyplot as plt
+import math as mt
+
 
 
 # Limpa o console e apaga todas as variáveis presentes:
@@ -120,10 +129,9 @@ teste_servidor()
 Ts = 0.06
 alturas = [] # VARIÁVEL DE SAÍDA (y)
 controle = [0] # VARIÁVEL DE CONTROLE (u)
-amostras = 500
+amostras = 1000
 # tempo = []
 erro = [0,0]
-rate = [0,0]
 
 
 # x = []
@@ -133,56 +141,19 @@ a2 = -0.029363939258160
 b1 = 0.026243849901936
 b2 = 0.274777441417530
 
-# Controle
-Kp = [0,0];
-Kd = [0,0];
-Ki = [0,0];
-
-#Ziegle Nichols:
-#Kc = 0.04028;
-#Ti = 1.969;
-#Td = 0.49225;
-
-#Astrom:        
-Kc =  0.25;
-Ti = 2.1008;
-Td = 0.52521;
-
-#AT-PID-FG:        
-#Kc =  1.41;
-#Ti = 0.0054;
-#Td = 0.0462;
-
-#Astrom - fuzzys:        
-#Kc =  0.05;
-#Ti = 2.1008;
-#Td = 0.52521;
-
 
 # amostras = int(input("Defina a quantidade de amostras: "))
 # valor_altura = input("Defina o valor de altura em milímetros: ")
-patamar = 500
-passo = 000
-ref = []
+
+eps=10;
+#eps=10;
+dh=60;
+dl=47;
+
 for amostra in range(amostras):
-    if amostra<=amostras/4:
-        ref.append(patamar)
-    elif amostra>amostras/4 and amostra <= amostras/2:
-        ref.append(patamar+passo) 
-    elif amostra > amostras/2 and amostra <= 3*amostras/4:
-        ref.append(patamar + 2*passo)
-    elif amostra>3*amostras/4:
-        ref.append(patamar + 3*passo)
+    ref   = 500
 
-#Senoidal
-
-#for amostra in range(amostras):
- #   ref   = 50 + 20*np.sin(amostra*Ts)
-
-
-valor_altura_float = [float(i) for i in ref]
-
-
+valor_altura_float = ref
 # set_pwm(pwm, "80")
 # time.sleep(1)
 
@@ -202,23 +173,18 @@ for amostra in range(amostras):
  
     
     # MALHA FECHADA
-    erro.append((valor_altura_float[k] - alturas[-1])/10)
+    erro.append((valor_altura_float - alturas[-1])/10)
 
-   # Controlador:
-    Ami = 1;
-    Kp.append(Kc/Ami);
-    Kd.append((Td)*Kc/Ami)
-    Ki.append((Kc/Ami)/(Ti))
+    if (abs(erro[-1]) >= eps) and (erro[-1]  >0):
+       controle.append(dh); 
+    if (abs(erro[-1]) > eps) and (erro[-1] < 0):
+        controle.append(dl); 
+    if (abs(erro[-1]) < eps) and (controle[-2] == dh):
+        controle.append(dh); 
+    if (abs(erro[-1]) < eps) and (controle[-2] == dl):
+        controle.append(dl);   
 
-    alpha = (Kc/Ami)*(1+((Td)/Ts)+(Ts/(2*(Ti))));
-    beta = -(Kc/Ami)*(1+2*((Td)/Ts)-(Ts/(2*(Ti))));
-    gama = (Kc/Ami)*(Td)/Ts;
 
-               
-    u = controle[-1] + alpha*erro[-1] + beta*erro[-2] + gama*erro[-3];
-
-    controle.append(u)
-    
     # SATURAÇÃO 
     if controle[-1] > 80:
         controle[-1] = 80
@@ -235,7 +201,7 @@ for amostra in range(amostras):
     # plt.title("Teste")
     k=k+1;
     
-        
+set_pwm(pwm, 0)        
 # PÓS AQUISIÇÃO
 total = time.time() - tempo_inicio_laco
 print("\n===============================================")
@@ -244,17 +210,16 @@ print(f"--- Média: {total/amostras} segundos/amostra")
 print("===============================================\n")
 pos_medicao(desligar)
 
-set_pwm(pwm, "0")
+# set_pwm(pwm, "0")
 
 # PLOTAGEM
-#plt.plot(list(range(amostras)), valor_altura_float, 'b')
-#plt.plot(list(range(amostras)), alturas, 'r')
-plt.plot( alturas)
-plt.plot(ref)
+plt.plot(list(range(amostras)), [valor_altura_float]*amostras, 'b')
+plt.plot(list(range(amostras)), alturas, 'r')
+plt.plot(list(range(amostras)), controle, 'g')
 plt.ylabel('Altura do objeto (mm)')
 plt.xlabel('Número da amostra')
 # plt.xlabel('Tempo')
-plt.title("Altura desejada: " + str(valor_altura_float[-1]) + "mm")
+plt.title("Altura desejada: " + str(valor_altura_float) + "mm")
 plt.show()
 
 plt.plot(list(range(amostras)), controle[:-1], 'g')
@@ -262,5 +227,5 @@ plt.plot(list(range(amostras)), controle[:-1], 'g')
 plt.ylabel('Variável de controle')
 plt.xlabel('Número da amostra')
 # plt.xlabel('Tempo')
-plt.title("Controle - Altura desejada: " + str(valor_altura_float[-1]) + "mm")
+plt.title("Controle - Altura desejada: " + str(valor_altura_float) + "mm")
 plt.show()

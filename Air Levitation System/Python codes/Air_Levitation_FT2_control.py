@@ -121,7 +121,7 @@ teste_servidor()
 Ts = 0.06
 alturas = [] # VARIÁVEL DE SAÍDA (y)
 controle = [0] # VARIÁVEL DE CONTROLE (u)
-amostras = 500
+amostras = 200
 # tempo = []
 erro = [0,0]
 rate = [0,0]
@@ -145,18 +145,18 @@ Td = 0.49225;
 
 # amostras = int(input("Defina a quantidade de amostras: "))
 # valor_altura = input("Defina o valor de altura em milímetros: ")
-patamar = 50
-passo = 20
+patamar = 500
+passo = 100
 ref = []
 for amostra in range(amostras):
     if amostra<=amostras/4:
         ref.append(patamar)
-    if amostra>amostras/4:
-        ref.append(patamar) 
-    if amostra>amostras/2 and amostra<=3*amostras/4:
-        ref.append(patamar + passo)
-    if amostra>3*amostras/4:
-        ref.append(patamar + passo)
+    elif amostra>amostras/4 and amostra <= amostras/2:
+        ref.append(patamar+passo) 
+    elif amostra > amostras/2 and amostra <= 3*amostras/4:
+        ref.append(patamar + 2*passo)
+    elif amostra>3*amostras/4:
+        ref.append(patamar + 3*passo)
 valor_altura_float = [float(i) for i in ref]
 
 

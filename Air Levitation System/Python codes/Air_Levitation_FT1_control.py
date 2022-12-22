@@ -138,25 +138,29 @@ Kp = [0,0];
 Kd = [0,0];
 Ki = [0,0];
 
-Kc = 0.04028;
-Ti = 1.969;
-Td = 0.49225;
+#Kc = 0.04028;
+#Ti = 1.969;
+#Td = 0.49225;
 
+#Astrom:        
+Kc =  0.25;
+Ti = 2.1008;
+Td = 0.52521;
 
 # amostras = int(input("Defina a quantidade de amostras: "))
 # valor_altura = input("Defina o valor de altura em milímetros: ")
 patamar = 500
-passo = 200
+passo = 000
 ref = []
 for amostra in range(amostras):
     if amostra<=amostras/4:
         ref.append(patamar)
-    if amostra>amostras/4:
-        ref.append(patamar) 
-    if amostra>amostras/2 and amostra<=3*amostras/4:
-        ref.append(patamar + passo)
-    if amostra>3*amostras/4:
-        ref.append(patamar + passo)
+    elif amostra>amostras/4 and amostra <= amostras/2:
+        ref.append(patamar+passo) 
+    elif amostra > amostras/2 and amostra <= 3*amostras/4:
+        ref.append(patamar + 2*passo)
+    elif amostra>3*amostras/4:
+        ref.append(patamar + 3*passo)
 
 valor_altura_float = [float(i) for i in ref]
 
@@ -174,11 +178,11 @@ tempo_inicio_laco = time.time()
 k=0;
 
 Am = []
-Am_min = 1;        
+Am_min = 3;        
 Am_max = 5;
 Theta_m_min = 30;
 Theta_m_max = 60;
-L = 1
+L = 4
 param =  [-L,0,-L,0,L,0,L,-L,0,-L,0,L,0,L]; # Para MF lineares
 FT1type = 'L';
 
@@ -262,3 +266,4 @@ plt.xlabel('Número da amostra')
 # plt.xlabel('Tempo')
 plt.title("Controle - Altura desejada: " + str(valor_altura_float[-1]) + "mm")
 plt.show()
+
