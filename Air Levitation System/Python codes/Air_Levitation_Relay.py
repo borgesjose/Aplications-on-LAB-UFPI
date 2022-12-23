@@ -138,7 +138,7 @@ b2 = 0.274777441417530
 # amostras = int(input("Defina a quantidade de amostras: "))
 # valor_altura = input("Defina o valor de altura em milímetros: ")
 
-eps=10;
+eps=35;
 #eps=10;
 dh=60;
 dl=47;

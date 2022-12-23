@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Dec 22 11:13:22 2022
+
+@author: netlu
+"""
+
 # ================================================================================== #
 # title           :Air_Levitation_PID_control.py                                     #
 # description     :Script  PID Air Levitation control                                #
@@ -15,8 +22,9 @@ from IPython import get_ipython
 import requests
 import time
 import matplotlib.pyplot as plt
+import math as mt
 
-from FT1_AT_PID_FG import *
+
 
 # Limpa o console e apaga todas as variáveis presentes:
 try:
@@ -124,7 +132,7 @@ controle = [0] # VARIÁVEL DE CONTROLE (u)
 amostras = 200
 # tempo = []
 erro = [0,0]
-rate = [0,0]
+
 
 # x = []
 
@@ -133,23 +141,11 @@ a2 = -0.029363939258160
 b1 = 0.026243849901936
 b2 = 0.274777441417530
 
-# Controle
-Kp = [0,0];
-Kd = [0,0];
-Ki = [0,0];
-
-Kc = 0.2500;
-Ti = 1.0122;
-Td = 0.2531;
-
-#Astrom:        
-#Kc =  0.25;
-#Ti = 2.1008;
-#Td = 0.52521;
 
 # amostras = int(input("Defina a quantidade de amostras: "))
 # valor_altura = input("Defina o valor de altura em milímetros: ")
-patamar = 800
+
+patamar = 80
 passo = 000
 ref = []
 for amostra in range(amostras):
@@ -162,11 +158,11 @@ for amostra in range(amostras):
     elif amostra>3*amostras/4:
         ref.append(patamar + 3*passo)
 
-valor_altura_float = [float(i) for i in ref]
+u = [float(i) for i in ref]
 
 
 
-
+valor_altura_float = ref
 # set_pwm(pwm, "80")
 # time.sleep(1)
 
@@ -176,19 +172,6 @@ valor_altura_float = [float(i) for i in ref]
 pre_medicao(ligar)
 tempo_inicio_laco = time.time()
 k=0;
-
-Am = []
-Am_min = 1;        
-Am_max = 5;
-Theta_m_min = 30;
-Theta_m_max = 60;
-L = 2
-param =  [-L,0,-L,0,L,0,L,-L,0,-L,0,L,0,L]; # Para MF lineares
-FT1type = 'L';
-
-
-
-k=0
 # LAÇO DE AQUISIÇÃO:
 for amostra in range(amostras):
     # plt.pause(0.01)
@@ -198,29 +181,8 @@ for amostra in range(amostras):
     
  
     
-    # MALHA FECHADA
-    erro.append((valor_altura_float[k] - alturas[-1])/10)
-    
-
-   # Controlador:
-       
-    Am.append(gain_margin_t1(erro[-1],rate[-1],L,param,FT1type));
-    
-    Ami = Am[-1]*Am_max + Am_min*(1 - Am[-1]);
-    
-    Kp.append(Kc/Ami);
-    Kd.append((Td)*Kc/Ami)
-    Ki.append((Kc/Ami)/(Ti))
-
-    alpha = (Kc/Ami)*(1+((Td)/Ts)+(Ts/(2*(Ti))));
-    beta = -(Kc/Ami)*(1+2*((Td)/Ts)-(Ts/(2*(Ti))));
-    gama = (Kc/Ami)*(Td)/Ts;
-
-               
-    u = controle[-1] + alpha*erro[-1] + beta*erro[-2] + gama*erro[-3];
-
-    controle.append(u)
-    
+    controle.append(u[k])
+  
     # SATURAÇÃO 
     if controle[-1] > 80:
         controle[-1] = 80
@@ -237,7 +199,7 @@ for amostra in range(amostras):
     # plt.title("Teste")
     k=k+1;
     
-      
+set_pwm(pwm, 0)        
 # PÓS AQUISIÇÃO
 total = time.time() - tempo_inicio_laco
 print("\n===============================================")
@@ -246,17 +208,16 @@ print(f"--- Média: {total/amostras} segundos/amostra")
 print("===============================================\n")
 pos_medicao(desligar)
 
-set_pwm(pwm, "0")
+# set_pwm(pwm, "0")
 
 # PLOTAGEM
-#plt.plot(list(range(amostras)), valor_altura_float, 'b')
-#plt.plot(list(range(amostras)), alturas, 'r')
-plt.plot( alturas)
-plt.plot(ref)
+plt.plot(list(range(amostras)), [valor_altura_float]*amostras, 'b')
+plt.plot(list(range(amostras)), alturas, 'r')
+plt.plot(list(range(amostras)), controle, 'g')
 plt.ylabel('Altura do objeto (mm)')
 plt.xlabel('Número da amostra')
 # plt.xlabel('Tempo')
-plt.title("Altura desejada: " + str(valor_altura_float[-1]) + "mm")
+plt.title("Altura desejada: " + str(valor_altura_float) + "mm")
 plt.show()
 
 plt.plot(list(range(amostras)), controle[:-1], 'g')
@@ -264,6 +225,5 @@ plt.plot(list(range(amostras)), controle[:-1], 'g')
 plt.ylabel('Variável de controle')
 plt.xlabel('Número da amostra')
 # plt.xlabel('Tempo')
-plt.title("Controle - Altura desejada: " + str(valor_altura_float[-1]) + "mm")
+plt.title("Controle - Altura desejada: " + str(valor_altura_float) + "mm")
 plt.show()
-

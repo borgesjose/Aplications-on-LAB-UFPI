@@ -120,7 +120,7 @@ teste_servidor()
 Ts = 0.06
 alturas = [] # VARIÁVEL DE SAÍDA (y)
 controle = [0] # VARIÁVEL DE CONTROLE (u)
-amostras = 500
+amostras = 200
 # tempo = []
 erro = [0,0]
 rate = [0,0]
@@ -139,19 +139,19 @@ Kd = [0,0];
 Ki = [0,0];
 
 #Ziegle Nichols:
-#Kc = 0.04028;
-#Ti = 1.969;
-#Td = 0.49225;
+Kc = 0.2500;
+Ti = 1.0122;
+Td = 0.2531;
 
 #Astrom:        
-Kc =  0.25;
-Ti = 2.1008;
-Td = 0.52521;
+#Kc =  0.25;
+#Ti = 2.1008;
+#Td = 0.52521;
 
 #AT-PID-FG:        
-#Kc =  1.41;
-#Ti = 0.0054;
-#Td = 0.0462;
+Kc =  -0.7329;
+Ti = -56.0354;
+Td =  -0.0050;
 
 #Astrom - fuzzys:        
 #Kc =  0.05;
@@ -161,7 +161,7 @@ Td = 0.52521;
 
 # amostras = int(input("Defina a quantidade de amostras: "))
 # valor_altura = input("Defina o valor de altura em milímetros: ")
-patamar = 500
+patamar = 600
 passo = 000
 ref = []
 for amostra in range(amostras):

@@ -145,63 +145,67 @@ b2 = 0.274777441417530
 # amostras = int(input("Defina a quantidade de amostras: "))
 # valor_altura = input("Defina o valor de altura em milímetros: ")
 
-eps=10;
-#eps=10;
-dh=60;
-dl=47;
-
-for amostra in range(amostras):
-    ref   = 500
-
-valor_altura_float = ref
-# set_pwm(pwm, "80")
-# time.sleep(1)
-
-# MEDIÇÃO
-
-# PREPARAÇÃO:
-pre_medicao(ligar)
-tempo_inicio_laco = time.time()
-k=0;
-# LAÇO DE AQUISIÇÃO:
-for amostra in range(amostras):
-    # plt.pause(0.01)
-    tempo_inicio_amostra = time.time()
-    alturas.append(int(altura(medicao)))
-    print("--- %s seconds ---" % (time.time() - tempo_inicio_amostra))
+epss = [1,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1]
+for eps in epss:
+    #eps=10;
+    #eps=10;
+    dh=60;
+    dl=47;
     
- 
+    for amostra in range(amostras):
+        ref   = 500
     
-    # MALHA FECHADA
-    erro.append((valor_altura_float - alturas[-1])/10)
-
-    if (abs(erro[-1]) >= eps) and (erro[-1]  >0):
-       controle.append(dh); 
-    if (abs(erro[-1]) > eps) and (erro[-1] < 0):
-        controle.append(dl); 
-    if (abs(erro[-1]) < eps) and (controle[-2] == dh):
-        controle.append(dh); 
-    if (abs(erro[-1]) < eps) and (controle[-2] == dl):
-        controle.append(dl);   
-
-
-    # SATURAÇÃO 
-    if controle[-1] > 80:
-        controle[-1] = 80
-    elif controle[-1] < 47:
-        controle[-1] = 47
-
-    set_pwm(pwm, controle[-1])
+    valor_altura_float = ref
+    # set_pwm(pwm, "80")
+    # time.sleep(1)
+    
+    # MEDIÇÃO
+    
+    # PREPARAÇÃO:
+    pre_medicao(ligar)
+    tempo_inicio_laco = time.time()
+    k=0;
+    # LAÇO DE AQUISIÇÃO:
+    for amostra in range(amostras):
+        # plt.pause(0.01)
+        tempo_inicio_amostra = time.time()
+        alturas.append(int(altura(medicao)))
+        print("--- %s seconds ---" % (time.time() - tempo_inicio_amostra))
         
-    # tempo.append(amostra*Ts)
-    # time.sleep(Ts - (time.time() - tempo_inicio_amostra)) # Atraso adaptativo?
+     
+        
+        # MALHA FECHADA
+        erro.append((valor_altura_float - alturas[-1])/10)
     
-    # x.append(amostra)
-    # plt.plot(x, alturas, 'r')
-    # plt.title("Teste")
-    k=k+1;
+        if (abs(erro[-1]) >= eps) and (erro[-1]  >0):
+           controle.append(dh); 
+        if (abs(erro[-1]) > eps) and (erro[-1] < 0):
+            controle.append(dl); 
+        if (abs(erro[-1]) < eps) and (controle[-2] == dh):
+            controle.append(dh); 
+        if (abs(erro[-1]) < eps) and (controle[-2] == dl):
+            controle.append(dl);   
     
-set_pwm(pwm, 0)        
+    
+        # SATURAÇÃO 
+        if controle[-1] > 80:
+            controle[-1] = 80
+        elif controle[-1] < 47:
+            controle[-1] = 47
+    
+        set_pwm(pwm, controle[-1])
+            
+        # tempo.append(amostra*Ts)
+        # time.sleep(Ts - (time.time() - tempo_inicio_amostra)) # Atraso adaptativo?
+        
+        # x.append(amostra)
+        # plt.plot(x, alturas, 'r')
+        # plt.title("Teste")
+        k=k+1;
+        
+    
+        
+    set_pwm(pwm, 0)        
 # PÓS AQUISIÇÃO
 total = time.time() - tempo_inicio_laco
 print("\n===============================================")
